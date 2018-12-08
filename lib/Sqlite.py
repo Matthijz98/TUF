@@ -2,48 +2,63 @@ import sqlite3
 conn = sqlite3.connect('database.db')
 c = conn.cursor()
 
-def setUpDataBase:
+def setUpDataBase():
     # make user table
-    c.execute('''CREATE TABLE user(user_id integer primary key, username text, password text) ''')
+    c.execute('CREATE TABLE IF NOT EXISTS users(user_id integer primary key AUTOINCREMENT, username text, password text) ')
     # make case_assignment table
-    c.execute('''CREATE TABLE case_assignment(assiment_id integer primary key, user_id integer, case_id integer)''')
+    c.execute('CREATE TABLE IF NOT EXISTS case_assignment(assiment_id integer primary key AUTOINCREMENT, user_id integer, case_id integer)')
     # make case table
-    c.execute('''CREATE TABLE case(case_id integer primary key, created_dar text, title text, description text)''')
+    c.execute('CREATE TABLE IF NOT EXISTS cases(case_id integer primary key AUTOINCREMENT, created_date text, title text, description text)')
     # make session table
-    c.execute('''CREATE TABLE session(session_id integer primary key, user_id integer ,start_time text, end_time text)''')
+    c.execute('CREATE TABLE IF NOT EXISTS sessions(session_id integer primary key AUTOINCREMENT, user_id integer ,start_time text, end_time text)')
     # make log table
-    c.execute('''CREATE TABLE log(log_id integer primary key, evidence_id integer, session_id integer, case_id integer, date_time text, title text, details text) ''')
+    c.execute('CREATE TABLE IF NOT EXISTS logs(log_id integer primary key AUTOINCREMENT, evidence_id integer, session_id integer, case_id integer, date_time text, title text, details text) ')
     # make evidence table
-    c.execute('''CREATE TABLE evidence(case_id integer , eveidence_id integer, title text, type integer)''')
+    c.execute('CREATE TABLE IF NOT EXISTS evidences(evidence_id integer primary key AUTOINCREMENT, case_id integer, title text, type integer)')
     # make file table
-    c.execute('''CREATE TABLE file(file_id integer primary key, evidence_id integer, evidence_id integer, file_hash_md5 text, hash_md5 text, hash_sha265 text, hash_sha512 text, hash_sha1 text, title text, date_created text, date_last_modified text, file_path text, size text, extention text)  ''')
+    c.execute('CREATE TABLE IF NOT EXISTS files(file_id integer primary key AUTOINCREMENT, evidence_id integer, file_hash_md5 text, hash_md5 text, hash_sha265 text, hash_sha512 text, hash_sha1 text, title text, date_created text, date_last_modified text, file_path text, size text, extention text)  ')
     # make virustotal_report
-    c.execute('''CREATE TABLE virustotal_report(scan_id primary key integer, file_id integer, scan_report )''')
+    c.execute('CREATE TABLE IF NOT EXISTS virustotal_reports(scan_id integer primary key AUTOINCREMENT, file_id integer, scan_report none)')
     # make proces table
-    c.execute('''CREATE TABLE proces(proces_id integer  primary key, case_id integer, evidence_id integer, name text, PID integer, PPID integer, thds integer, hnds integer, time integer)''')
-
+    c.execute('CREATE TABLE IF NOT EXISTS processes(proces_id integer  primary key AUTOINCREMENT, case_id integer, evidence_id integer, name text, PID integer, PPID integer, thds integer, hnds integer, time integer)')
+    # commit all changes to the database
     conn.commit()
+    # close connection to the database
+
+def checkDataBase():
+    return
+def setLogItem(values):
+    c.executemany('INSERT INTO logs (evidence_id, session_id, case_id, date_time, title, details) VALUES (?, ?, ?, ?, ?, ? )', values)
+    return
+def getLogItemDetails(logId, title):
+    return
+def getLogItems(args):
+    return
+def setCase(values):
+    c.executemany('INSERT INTO cases VALUES (?, ?, ?, ?)', values)
+    return
+def getCase(caseId, fields):
+    return
+def getCases(args):
+    return
+def setEvidenceItem(values):
+    c.executemany('INSERT INTO evidences values(?, ?, ?, ?)', values)
+    return
+def getEvidenceItemDetails(evidenceId, fields):
+    return
+def getEvidenceItems(args):
+    return
+
+if __name__ == '__main__':
+    setUpDataBase()
+
+    logValues = [(1, 1, 1, '02-07-1988', 'testtitle', 'testdetails')]
+    setLogItem(logValues)
+
+    caseValues = [(1, '02-07-1998', 'testTile', 'TestDescription')]
+    setCase(caseValues)
+
+    evidenceValues = [(1, 1, 'testTitle', 'TestDescription')]
+    setEvidenceItem(evidenceValues)
 
     conn.close()
-
-def checkDataBase:
-
-def setLogItem(dateTime, title, details):
-
-def getLogItemDetails(logId, title):
-
-def getLogItems(args[]):
-
-def setCase(caseId, date):
-
-def getCase(caseId, fields):
-
-def getCases(args[]):
-
-def setEvidenseItem(hashes[], file, extention, size, dateTime):
-
-def getEvidenseItemDetails(evidenseId, fields):
-
-def getEvidenseItems(args[]):
-
-def logItem(file, location, tag):
