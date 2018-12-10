@@ -1,4 +1,4 @@
-
-lib/database\.db
-
 lib/__pycache__/
+docs/_build/
+database.db
+

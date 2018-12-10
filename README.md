@@ -1,4 +1,5 @@
 # TUF
+[![Documentation Status](https://readthedocs.org/projects/tuf/badge/?version=latest)](https://tuf.readthedocs.io/en/latest/?badge=latest)
 ## Turtle Forensics
 
 ## Code Formats
