@@ -1,2 +1,4 @@
 
 lib/database\.db
+
+lib/__pycache__/

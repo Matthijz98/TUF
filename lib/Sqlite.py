@@ -50,14 +50,14 @@ class Sqlite:
     def getLogItems(self, args):
         return
     def setCase(self, values):
-        c.executemany('INSERT INTO cases VALUES (?, ?, ?, ?)', values)
+        self.c.executemany('INSERT INTO cases VALUES (?, ?, ?, ?)', values)
         return
     def getCase(self, caseId, fields):
         return
     def getCases(self, args):
         return
     def setEvidenceItem(self, values):
-        c.executemany('INSERT INTO evidences values(?, ?, ?, ?)', values)
+        self.c.executemany('INSERT INTO evidences values(?, ?, ?, ?)', values)
         return
     def getEvidenceItemDetails(self, evidenceId, fields):
         return
