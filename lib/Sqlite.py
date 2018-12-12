@@ -6,15 +6,13 @@ class Sqlite:
     # make all class atributes
     path = ''
     filename = ''
-    conn = ''
-    c =''
 
     # the constructor function to set all the atributes
     def __init__(self, path, filename):
         self.path = path
         self.filename
         # make a conn object to the database
-        self.conn = self.sqlite3.connect('database.db')
+        self.conn = self.sqlite3.connect(path + '/' + filename+'.db')
         self.c = self.conn.cursor()
 
     def setUpDataBase(self):
@@ -43,7 +41,7 @@ class Sqlite:
     def checkDataBase(self):
         return
     def setLogItem(self, values):
-        c.executemany('INSERT INTO logs (evidence_id, session_id, case_id, date_time, title, details) VALUES (?, ?, ?, ?, ?, ? )', values)
+        self.c.executemany('INSERT INTO logs (evidence_id, session_id, case_id, date_time, title, details) VALUES (?, ?, ?, ?, ?, ? )', values)
         return
     def getLogItemDetails(seld, logId, title):
         return
