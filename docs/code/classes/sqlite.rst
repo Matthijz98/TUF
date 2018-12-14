@@ -120,5 +120,55 @@ Voorbeeld
     values = [created_date:'141220180951' , title: 'The Case Title', description: 'The case description']
     setCase(values)
 
-****************************
-getCase(self, caseId, fields)
+*********
+getCase()
+*********
+De ``getCase(self, caseId, fields)`` functie kan gebruikt worden om gegevens van een case te krijgen.
+
+Arguments
+=========
+:self: This argument is provided by default
+:caseId: De caseId waarvan je meer details wilt hebben
+:fields: De velden die je terug wilt hebben
+
+Voorbeeld
+=========
+::
+
+    print getCase(1, 'all')
+    >> [created_date:'141220180951' , title: 'The Case Title', description: 'The case description']
+
+**********
+getCases()
+**********
+De ``getCases(self, args)`` fucntie kan gebruikt worden om alle cases te krijgen die aan een aantal voorwaarde voldoen
+
+Arguments
+=========
+:self: This argument is provided by default
+:args: De argumenten waaraan de cases moeten voldoen
+
+Voorbeeld
+=========
+::
+
+    args = "userId=1"
+    print getCases(args)
+    >> [created_date:'141220180951' , title: 'The Case Title', description: 'The case description'], [created_date:'141220180951' , title: 'The Case Title', description: 'The case description']
+
+*****************
+setEvidenceItem()
+*****************
+De ``setEvidenceItem(self, values)`` fucntie kan gebruikt worden om een evidence item aan te maken in de database
+
+Arguments
+=========
+:self: This argument is provided by default
+:values: Een array met de volgede waarde case_id, title text
+
+Voorbeeld
+=========
+::
+
+    values = [caseId: 1, caseId: 1, evidenceId: 1, title: 'evidence Title']
+    setEvidenceItem(values)
