@@ -10,5 +10,6 @@ def hashing(filename):
         hash.update(buffer)
     return hash.hexdigest()
 
-value = hashing("Voer hier je pad in")
+
+value = hashing("Voer hier het pad in")
 print(value)
