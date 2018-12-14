@@ -43,7 +43,7 @@ class Sqlite:
     def setLogItem(self, values):
         self.c.executemany('INSERT INTO logs (evidence_id, session_id, case_id, date_time, title, details) VALUES (?, ?, ?, ?, ?, ? )', values)
         return
-    def getLogItemDetails(seld, logId, title):
+    def getLogItemDetails(self, logId, title):
         return
     def getLogItems(self, args):
         return
