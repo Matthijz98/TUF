@@ -12,4 +12,5 @@ def hashing(filename):
 
 
 value = hashing("Voer hier het pad in")
-print(value)
+print("De MD5-Hash:", value)
+
