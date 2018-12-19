@@ -46,7 +46,7 @@ class Sqlite:
         return
 
     def get_logitem_details(self, logId):
-        self.c.execute("SELECT * FROM logs WHERE logId = '%s'" % logId)
+        self.c.execute("SELECT * FROM logs WHERE logId = '%lodId'" % logId)
         return self.c.fetchall()
 
     def get_logitems(self, args):
@@ -57,22 +57,23 @@ class Sqlite:
         self.c.executemany('INSERT INTO cases VALUES (?, ?, ?, ?)', values)
         return
 
-    def get_case(self, caseId, fields):
-        if fields == None:
-            pass
-        self.c.execute("SELECT '%fields'")
-        return
+    def get_case(self, case_id, fields='*'):
+        self.c.execute("SELECT '%fields' WHERE case_id='%caseId'" % fields % case_id)
+        return self.c.fetchall()
 
     def get_cases(self, args):
-        return
+        self.c.execute("SELECT * FROM cases WHERE '%args'" % args)
+        return self.c.fetchall()
 
     def set_evidence_item(self, values):
         self.c.executemany('INSERT INTO evidences values(?, ?, ?, ?)', values)
         return
 
-    def get_evidence_item_details(self, evidenceId, fields):
-        return
+    def get_evidence_item_details(self, evidence_id, fields):
+        self.c.execute("SELECT * FROM evidences WHERE evidence_id='%evidence_id'" % evidence_id)
+        return self.c.fetchall()
 
     def get_evidence_items(self, args):
+        self.c.execute("SELECT * FROM evidences WHERE '%args'" % args)
         return
 

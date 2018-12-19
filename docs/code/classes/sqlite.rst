@@ -99,7 +99,7 @@ Voorbeelden
 ===========
 ::
 
-    args = "evidenceID='1'"
+    args = "evidence_id='1'"
     print get_log_items(args)
     >> [[logId: 1, title: 'logtitle 1', dateTime: '141220180915'], [logId: 1, title: 'logtitle 1', dateTime: '161220181022']]
 
@@ -152,7 +152,7 @@ Voorbeeld
 =========
 ::
 
-    args = "userId=1"
+    args = "user_id=1"
     print get_cases(args)
     >> [created_date:'141220180951' , title: 'The Case Title', description: 'The case description'], [created_date:'141220180951' , title: 'The Case Title', description: 'The case description']
 
@@ -170,5 +170,5 @@ Voorbeeld
 =========
 ::
 
-    values = [caseId: 1, caseId: 1, evidenceId: 1, title: 'evidence Title']
+    values = [caseId: 1, caseId: 1, evidence_id: 1, title: 'evidence Title']
     set_evidence_item(values)
