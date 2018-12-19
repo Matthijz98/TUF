@@ -1,15 +1,16 @@
-import hashlib
+class Hash:
 
+    import hashlib
 
-def hashing(filename):
+    def hashing(self, filename):
 
-    hash = hashlib.md5()
+        hash = self.hashlib.md5()
 
-    with open(filename, 'rb') as file:
-        buffer = file.read()
-        hash.update(buffer)
-    return hash.hexdigest()
+        with open(filename, 'rb') as file:
+            buffer = file.read()
+            hash.update(buffer)
+        return hash.hexdigest()
 
-
-value = hashing("Voer hier het pad in")
-print(value)
+if __name__ == '__main__':
+    value = hashing("Voer hier het pad in")
+    print(value)
