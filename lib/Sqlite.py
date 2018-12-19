@@ -10,12 +10,12 @@ class Sqlite:
     # the constructor function to set all the atributes
     def __init__(self, path, filename):
         self.path = path
-        self.filename
+        self.filename = filename
         # make a conn object to the database
-        self.conn = self.sqlite3.connect(path + '/' + filename+'.db')
+        self.conn = self.sqlite3.connect(self.path + '/' + self.filename+'.db')
         self.c = self.conn.cursor()
 
-    def setUpDataBase(self):
+    def setup_database(self):
         # make user table
         self.c.execute('CREATE TABLE IF NOT EXISTS users(user_id integer primary key AUTOINCREMENT, username text, password text) ')
         # make case_assignment table
@@ -38,26 +38,41 @@ class Sqlite:
         self.conn.commit()
         # close connection to the database
 
-    def checkDataBase(self):
+    def check_database(self):
         return
-    def setLogItem(self, values):
+
+    def set_logitem(self, values):
         self.c.executemany('INSERT INTO logs (evidence_id, session_id, case_id, date_time, title, details) VALUES (?, ?, ?, ?, ?, ? )', values)
         return
-    def getLogItemDetails(self, logId, title):
-        return
-    def getLogItems(self, args):
-        return
-    def setCase(self, values):
+
+    def get_logitem_details(self, logId):
+        self.c.execute("SELECT * FROM logs WHERE logId = '%s'" % logId)
+        return self.c.fetchall()
+
+    def get_logitems(self, args):
+        self.c.execute("SELECT * FROM logs WHERE '%args'" % args)
+        return self.c.fetchall()
+
+    def set_case(self, values):
         self.c.executemany('INSERT INTO cases VALUES (?, ?, ?, ?)', values)
         return
-    def getCase(self, caseId, fields):
+
+    def get_case(self, caseId, fields):
+        if fields == None:
+            pass
+        self.c.execute("SELECT '%fields'")
         return
-    def getCases(self, args):
+
+    def get_cases(self, args):
         return
-    def setEvidenceItem(self, values):
+
+    def set_evidence_item(self, values):
         self.c.executemany('INSERT INTO evidences values(?, ?, ?, ?)', values)
         return
-    def getEvidenceItemDetails(self, evidenceId, fields):
+
+    def get_evidence_item_details(self, evidenceId, fields):
         return
-    def getEvidenceItems(self, args):
+
+    def get_evidence_items(self, args):
         return
+
