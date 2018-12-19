@@ -28,9 +28,9 @@ Voordbeeld
     Sqlite = new Sqlite('C:\Users\%username%\Documents', 'FUT-database')``
 
 ***************
-setUpDataBase()
+setup_database()
 ***************
-De ``setUpDataBase(self)`` functie kan gebruikt worden om een database aan te maken en de tabel structuur op te zetten.
+De ``setup_database(self)`` functie kan gebruikt worden om een database aan te maken en de tabel structuur op te zetten.
 
 Arguments
 =========
@@ -40,12 +40,12 @@ Voorbeeld
 =========
 ::
 
-    setUpDataBase()
+    setup_database()
 
 ***************
-checkDataBase()
+check_database()
 ***************
-De ``checkDataBase(self)`` fucntie kan gebruikt worden om de database te controleren. De functie returnd een 0 als alles goed is. Of 1 als er iets niet goed is samen met een error bericht.
+De ``check_database(self)`` fucntie kan gebruikt worden om de database te controleren. De functie returnd een 0 als alles goed is. Of 1 als er iets niet goed is samen met een error bericht.
 
 Argugemts
 =========
@@ -55,13 +55,13 @@ Voordbeeld
 ==========
 ::
 
-    if checkDatabase == 1:
+    if check_database == 1:
         print error
 
 ************
-setLogItem()
+set_log_item()
 ************
-De ``setLogItem(self, values)`` fucntie kan worden gebruik om een logitem in de database op te slaan.
+De ``set_log_item(self, values)`` fucntie kan worden gebruik om een logitem in de database op te slaan.
 
 Arguments
 =========
@@ -69,9 +69,9 @@ Arguments
 :values: array met (int)evidence_id, (int)session_id, (int)case_id, (String)date_time, (String)title, (String)details
 
 ********************
-getLogItemDetails()
+get_log_item_details()
 ********************
-De ``getLogItemDetails(self, logId):`` fucntie kan gebruikt worden om alle details van logTiems te krijgen. De functie heeft een logId nodig om de goede log regel.
+De ``get_log_item_details(self, logId):`` fucntie kan gebruikt worden om alle details van logTiems te krijgen. De functie heeft een logId nodig om de goede log regel.
 
 Arguguments
 ============
@@ -86,9 +86,9 @@ Voordbeeld
     >> [evidence_id: '1', session_id: 1, case_id: '1',date_time:'141220180915' , title: 'this is a title',     >> [evidence_id: '1', session_id: 1, case_id: '1',date_time:'141220180915' , title: 'this is a title', details: 'This is some details about this log']
 
 *************
-getLogItems()
+get_log_items()
 *************
-De ``getLogItems(self, args):`` kan gebruikt worden om alle log items te vinden die aan specifieke voorwaarde voldoen.
+De ``get_log_items(self, args):`` kan gebruikt worden om alle log items te vinden die aan specifieke voorwaarde voldoen.
 
 Arguments
 =========
@@ -100,13 +100,13 @@ Voorbeelden
 ::
 
     args = "evidenceID='1'"
-    print getLogItems(args)
+    print get_log_items(args)
     >> [[logId: 1, title: 'logtitle 1', dateTime: '141220180915'], [logId: 1, title: 'logtitle 1', dateTime: '161220181022']]
 
 *********
-setCase()
+set_case()
 *********
-De ``setCase(values)`` kan worden gebruikt om een case aantemaken in de database.
+De ``set_case(values)`` kan worden gebruikt om een case aantemaken in de database.
 
 Arguments
 =========
@@ -118,12 +118,12 @@ Voorbeeld
 ::
 
     values = [created_date:'141220180951' , title: 'The Case Title', description: 'The case description']
-    setCase(values)
+    set_case(values)
 
 *********
-getCase()
+get_case()
 *********
-De ``getCase(self, caseId, fields)`` functie kan gebruikt worden om gegevens van een case te krijgen.
+De ``get_case(self, caseId, fields)`` functie kan gebruikt worden om gegevens van een case te krijgen.
 
 Arguments
 =========
@@ -135,13 +135,13 @@ Voorbeeld
 =========
 ::
 
-    print getCase(1, 'all')
+    print get_case(1, 'all')
     >> [created_date:'141220180951' , title: 'The Case Title', description: 'The case description']
 
 **********
-getCases()
+get_cases()
 **********
-De ``getCases(self, args)`` fucntie kan gebruikt worden om alle cases te krijgen die aan een aantal voorwaarde voldoen
+De ``get_cases(self, args)`` fucntie kan gebruikt worden om alle cases te krijgen die aan een aantal voorwaarde voldoen
 
 Arguments
 =========
@@ -153,13 +153,13 @@ Voorbeeld
 ::
 
     args = "userId=1"
-    print getCases(args)
+    print get_cases(args)
     >> [created_date:'141220180951' , title: 'The Case Title', description: 'The case description'], [created_date:'141220180951' , title: 'The Case Title', description: 'The case description']
 
 *****************
-setEvidenceItem()
+set_evidence_item()
 *****************
-De ``setEvidenceItem(self, values)`` fucntie kan gebruikt worden om een evidence item aan te maken in de database
+De ``set_evidence_item(self, values)`` fucntie kan gebruikt worden om een evidence item aan te maken in de database
 
 Arguments
 =========
@@ -171,4 +171,4 @@ Voorbeeld
 ::
 
     values = [caseId: 1, caseId: 1, evidenceId: 1, title: 'evidence Title']
-    setEvidenceItem(values)
+    set_evidence_item(values)
