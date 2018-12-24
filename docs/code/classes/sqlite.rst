@@ -69,31 +69,33 @@ Arguments
 :values: array met (int)evidence_id, (int)session_id, (int)case_id, (String)date_time, (String)title, (String)details
 
 ********************
-get_log_item_details()
+get_log_item()
 ********************
-De ``get_log_item_details(self, logId):`` fucntie kan gebruikt worden om alle details van logTiems te krijgen. De functie heeft een logId nodig om de goede log regel.
+De ``get_log_item(self, logId, fields):`` fucntie kan gebruikt worden om alle details van logTiems te krijgen. De functie heeft een logId nodig om de goede log regel.
 
 Arguguments
 ============
 :self: This arguments is provided by default
 :lodId: Het logId van de logregel waarvan meer je meer details wilt hebben
+:fields: Een lijst met alle velden uit de database die gereturnd moeten worden (default "*")
 
 Voordbeeld
 ==========
 ::
 
-    print getLodDetails(1)
-    >> [evidence_id: '1', session_id: 1, case_id: '1',date_time:'141220180915' , title: 'this is a title',     >> [evidence_id: '1', session_id: 1, case_id: '1',date_time:'141220180915' , title: 'this is a title', details: 'This is some details about this log']
+    print get_logitem(1, fields="evidence_id, session_id, title")
+    >> [evidence_id: '1', session_id: 1, case_id: '1', title: 'this is a title']
 
 *************
 get_log_items()
 *************
-De ``get_log_items(self, args):`` kan gebruikt worden om alle log items te vinden die aan specifieke voorwaarde voldoen.
+De ``get_log_items(self, args, fields):`` kan gebruikt worden om alle log items te vinden die aan specifieke voorwaarde voldoen.
 
 Arguments
 =========
 :self: This arguments is provided by default
 :args: Een lijst met argumenten waaraan de logitems moeten voldoen
+:fields: Een lijst met alle velden uit de database die gereturnd moeten worden (default "*")
 
 Voorbeelden
 ===========

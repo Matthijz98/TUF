@@ -101,8 +101,8 @@ class Sqlite:
         self.c.executemany('INSERT INTO logs (evidence_id, session_id, case_id, date_time, title, details) VALUES (?, ?, ?, ?, ?, ? )', values)
         return
 
-    def get_logitem_details(self, logId):
-        self.c.execute("SELECT * FROM logs WHERE logId = '%lodId'" % logId)
+    def get_logitem(self, logId, fields = "*"):
+        self.c.execute("SELECT '%fields' FROM logs WHERE logId = '%lodId'" % fields % logId)
         return self.c.fetchall()
 
     def get_logitems(self, args):
@@ -133,6 +133,22 @@ class Sqlite:
         self.c.execute("SELECT * FROM evidences WHERE '%args'" % args)
         return
 
+#
+# private functions
+#
+
+
+def query_build(args):
+    query = ""
+    for arg in args.keys():
+        query += str(arg) + " = " + str(args[arg]) + " AND "
+    return query
+
+
 if __name__ == '__main__':
-    Sqlite = Sqlite('C:\Users\mzond\Desktop\DEV\TUF', 'database')
-    Sqlite.setup_database()
+    args = {'test_id': '1', 'id': 'test'}
+    print(query_build(args))
+
+
+    #Sqlite = Sqlite('C:\Users\mzond\Desktop\DEV\TUF', 'database')
+    #Sqlite.setup_database()
