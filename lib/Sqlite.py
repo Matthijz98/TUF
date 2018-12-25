@@ -1,3 +1,6 @@
+################
+# Sqlite Class #
+################
 class Sqlite:
 
     # import sqlite libary
@@ -117,15 +120,15 @@ class Sqlite:
         self.c.execute("SELECT '%fields' WHERE case_id='%caseId'" % fields % case_id)
         return self.c.fetchall()
 
-    def get_cases(self, args):
-        self.c.execute("SELECT * FROM cases WHERE '%args'" % args)
+    def get_cases(self, args, fields='*'):
+        self.c.execute("SELECT '%fields' FROM cases WHERE '%args'" % fields % args)
         return self.c.fetchall()
 
     def set_evidence_item(self, values):
         self.c.executemany('INSERT INTO evidences values(?, ?, ?, ?)', values)
         return
 
-    def get_evidence_item_details(self, evidence_id, fields):
+    def get_evidence_item_details(self, evidence_id, fields='*'):
         self.c.execute("SELECT * FROM evidences WHERE evidence_id='%evidence_id'" % evidence_id)
         return self.c.fetchall()
 
@@ -134,5 +137,3 @@ class Sqlite:
         return
 
 if __name__ == '__main__':
-    Sqlite = Sqlite('C:\Users\mzond\Desktop\DEV\TUF', 'database')
-    Sqlite.setup_database()
