@@ -1,26 +1,22 @@
-import configparser
+class Settings:
 
-config = configparser.ConfigParser()
+    import configparser
 
+    config = configparser.ConfigParser()
 
-def makeDefaultConfig():
-    config['SQLite'] = {'fileName': 'database.db',
-                        'filePatch': ''}
-    saveConfig()
+    def make_default_config(self):
+        self.config['SQLite'] = {'fileName': 'database.db', 'filePatch': ''}
+        self.saveConfig()
 
+    def get_settings(self):
+        self.settings = dict(config.items())
+        return self.settings
 
-def getSettings():
-    settings = dict(config.items())
-    return settings
+    def save_config(self):
+        with open('config.ini', 'w') as configfile:
+            self.config.write(configfile)
 
-
-def saveConfig():
-    with open('config.ini', 'w') as configfile:
-        config.write(configfile)
-
-
-def setSetting(section, key, value):
-    newConfig = config
-    newConfig[section][key] = value
-    saveConfig()
+    def set_setting(self, section, key, value):
+        self.config[section][key] = value
+        self.saveConfig()
 
