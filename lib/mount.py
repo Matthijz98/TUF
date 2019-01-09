@@ -39,8 +39,7 @@ def importISO():
 
 
 def raw(imagehandle):
-    # Declare path to image
-    imagefile = r"C:\Users\Gido Scherpenhuizen\Documents\,School\IIPFIT5\TEST\micro-sd-drone.001"
+
 
     # Get and print PartitionTable from image
     partitionTable = pytsk3.Volume_Info(imagehandle)
@@ -48,7 +47,7 @@ def raw(imagehandle):
         print(partition.addr, partition.desc.decode('utf-8'), "%ss(%s)" % (partition.start, partition.start * 512), partition.len)
 
     # Tell libstk where the filesystem is
-    filesystemObject = pytsk3.FS_Info(imagehandle, offset=23552)
+    filesystemObject = pytsk3.FS_Info(imagehandle, offset=(partition.start*512))
 
     # Pick a file
     fileObject = filesystemObject.open("/PHOTO/PICT0000.jpg")
@@ -111,6 +110,8 @@ def e01(filenames):
             # Only for test purpose
             print(tabulate(table, headers="firstrow"))
 """
+            FILE EXPORT !!FUNCTIE VAN MAKEN!!
+            
             # Pick a file
             fileObject = filesystemObject.open(pjoin(r'/Windows/System32/winevt/Logs/HardwareEvents.evtx'))
             fileName = str(fileObject.info.name.name.decode('utf-8'))
@@ -154,9 +155,22 @@ def main():
 
     args = argparser.parse_args()
 
-    if (args.imagetype == "e01"):
+    if (args.imagetype == "e01"):                               # Vervangen door return uit de GUI
         filenames = pyewf.glob(args.imagefile)
-        e01(filenames)
+
+        ewf_handle = pyewf.handle()
+        ewf_handle.open(filenames)
+
+        # Open Pytsk3 handle on E01 image
+        imagehandle = ewf_Img_Info(ewf_handle)
+    else:
+        imagehandle = pytsk3.Img_Info(args.imagefile)
+
+    partitionTable = pytsk3.Volume_Info(imagehandle)
+
+
+
+
 
     elif (args.imagetype == "raw"):
         print("Raw type")
