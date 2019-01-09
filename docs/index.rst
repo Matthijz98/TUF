@@ -9,7 +9,7 @@ Welkom bij de TUF documentatie!
 Inhoud
 ------
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
 
    code/classes/sqlite
    code/classes/settings
