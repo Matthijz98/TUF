@@ -84,8 +84,6 @@ def e01(filenames):
             continue
         print("File System Type Dectected ", filesystemObject.info.ftype)
 
-
-
     for partition in partitionTable:
         if 'NTFS' in partition.desc.decode('utf-8'):
             # Tell libstk where the filesystem is
