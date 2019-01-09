@@ -6,6 +6,7 @@ config = configparser.ConfigParser()
 def makeDefaultConfig():
     config['SQLite'] = {'fileName': 'database.db',
                         'filePatch': ''}
+    config['VirusTotal'] = {'apikey':''}
     saveConfig()
 
 
