@@ -27,10 +27,10 @@ class Sqlite:
                        'FOREIGN KEY (user_id) REFERENCES users(user_id), '
                        'FOREIGN KEY (case_id) REFERENCES cases(case_id))')
         # make cases table
-        self.c.execute('CREATE TABLE IF NOT EXISTS cases(case_id integer primary key AUTOINCREMENT, '
-                       'created_date text, '
-                       'title text, '
-                       'description text)')
+        self.c.execute('CREATE TABLE cases (case_id integer,
+                        'case_code integer,
+                        'case_description varchar,
+                        'case_title varchar)')
         # make sessions table
         self.c.execute('CREATE TABLE IF NOT EXISTS sessions(session_id integer primary key AUTOINCREMENT, '
                        'user_id integer,'
@@ -98,7 +98,7 @@ class Sqlite:
         return
 
     def set_logitem(self, values):
-        self.c.executemany('INSERT INTO logs (evidence_id, session_id, case_id, date_time, title, details) VALUES (?, ?, ?, ?, ?, ? )', values)
+        self.c.executemany('INSERT INTO logs (evidence_id, session_id, case_id, date_time, title, details) VALUES (?, ?, ?, ?, ?, ? )', values["evidence_id"], values["session_id"], values["case_id"], values["date_time"] ,values["title"] ,values["details"])
         return
 
     def get_logitem(self, logId, fields = "*"):
@@ -110,7 +110,7 @@ class Sqlite:
         return self.c.fetchall()
 
     def set_case(self, values):
-        self.c.executemany('INSERT INTO cases VALUES (?, ?, ?, ?)', values)
+        self.c.executemany('INSERT INTO cases (case_code, case_description, case_title) VALUES (?, ?, ?, ?)', values["case_code"], values["case_descrption"], values["case_title"])
         return
 
     def get_case(self, case_id, fields='*'):
@@ -122,7 +122,7 @@ class Sqlite:
         return self.c.fetchall()
 
     def set_evidence_item(self, values):
-        self.c.executemany('INSERT INTO evidences values(?, ?, ?, ?)', values)
+        self.c.executemany('INSERT INTO evidences (evicence_code, case_id, title, type) values(?, ?, ?, ?)', values["evidence_code"], values["case_id"], values["title"], values["type"])
         return
 
     def get_evidence_item_details(self, evidence_id, fields):
