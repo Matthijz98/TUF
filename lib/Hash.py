@@ -18,6 +18,6 @@ def hashing(filename):
 
 
 # file path aangeven en de md5 printen
-value = hashing("")
+value = hashing(" ")
 print("De MD5-Hash:", value)
 
