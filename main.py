@@ -2,13 +2,10 @@ if __name__ == '__main__':
     from lib import GUI as gui
     from lib import Settings
     from lib import Sqlite
-
-
-    def makeCase(path, name):
-        db = Sqlite.Sqlite(path, name)
-        db.setup_database()
-
     import PySimpleGUI as Sg
+
+    db = Sqlite.Sqlite('C:/Users/mzond/Desktop', 'database')
+    db.setup_database()
 
     layout = [[Sg.Text('Welcome to Turtle Forensics!')],
               [Sg.Text('', key='_OUTPUT_')],
@@ -44,8 +41,8 @@ if __name__ == '__main__':
                 y = ev2, vals2[1]
                 path = y[1]
 
-                makeCase(str(path), str(name))
-
+                # db.set_case([(1, '141220180951', 'The Case Title', 'The case description')])
+                print(db.get_cases())
             if ev2 in (None, 'Back', '< Prev'):
                 win2_active = False
                 win2.Close()
