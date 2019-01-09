@@ -3,8 +3,10 @@ if __name__ == '__main__':
     from lib import Settings
     from lib import Sqlite
 
-    def makecase(x):
-        print(x)
+
+    def makeCase(path, name):
+        db = Sqlite.Sqlite(path, name)
+        db.setup_database()
 
     import PySimpleGUI as Sg
 
@@ -29,14 +31,21 @@ if __name__ == '__main__':
             layout2 = [[Sg.Text('Create Case')],
                        [Sg.Text('Case name: '), Sg.Input()],
                        [Sg.Text('Case path: '), Sg.Input('filepath'), Sg.FileBrowse()],
-                       [Sg.Button('Save case')],
+                       [Sg.Submit('Save case')],
                        [Sg.Button('Back'), Sg.Button('Next')]]
             win2 = Sg.Window('Create Case').Layout(layout2)
 
         if win2_active:
             ev2, vals2 = win2.Read()
             if ev2 == 'Save case':
-                print(ev2, vals2)
+                # fix the varibales so they will work
+                x = ev2, vals2[0]
+                name = x[1]
+                y = ev2, vals2[1]
+                path = y[1]
+
+                makeCase(str(path), str(name))
+
             if ev2 in (None, 'Back', '< Prev'):
                 win2_active = False
                 win2.Close()

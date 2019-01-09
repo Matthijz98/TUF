@@ -12,6 +12,7 @@ class Sqlite:
         self.path = path
         self.filename = filename
         # make a conn object to the database
+        print("save db to: " + self.path + '/' + self.filename+'.db')
         self.conn = self.sqlite3.connect(self.path + '/' + self.filename+'.db')
         self.c = self.conn.cursor()
 
