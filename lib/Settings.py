@@ -23,4 +23,3 @@ def setSetting(section, key, value):
     newConfig = config
     newConfig[section][key] = value
     saveConfig()
-
