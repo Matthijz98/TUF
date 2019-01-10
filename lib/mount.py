@@ -128,62 +128,75 @@ def e01(filenames):
             filedata = fileObject.read_random(0, fileObject.info.meta.size)
             outfile.write(filedata)"""
 
+class test():
+    def main(imagefile, imagetype, ):
+        if (imagetype == "e01"):  # Vervangen door return uit de GUI
+            filenames = pyewf.glob(imagefile)
+            ewf_handle = pyewf.handle()
+            ewf_handle.open(filenames)
 
+            # Open Pytsk3 handle on E01 image
+            imagehandle = ewf_Img_Info(ewf_handle)
+        else:
+            imagehandle = pytsk3.Img_Info(imagefile)
+        volume = pytsk3.Volume_Info(imagehandle)
+        test.printpartitiontable(imagehandle, volume)
+        test.listfiles(volume, imagehandle)
 
+    def printpartitiontable(imagehandle, volume):
+        for partition in volume:
+            print(partition.addr, partition.desc.decode('utf-8'), "%ss(%s)" % (partition.start, partition.start * 512),
+                  partition.len)
+            try:
+                filesystemObject = pytsk3.FS_Info(imagehandle, offset=(partition.start * 512))
+            except:
+                # print("Partition has no supported file system")
+                continue
+            # print("File System Type Dectected ", filesystemObject.info.ftype)
 
-def main(imagefile, imagetype, ):
-    if (imagetype == "e01"):                               # Vervangen door return uit de GUI
-        filenames = pyewf.glob(imagefile)
+    def listfiles(volume, imagehandle):
+        for partition in volume:
+            # Variabele return vanuit de GUI met gekozen partitie
+            if 'FAT16' in partition.desc.decode('utf-8'):
+                filesystemObject = pytsk3.FS_Info(imagehandle, offset=partition.start * 512)
 
-        ewf_handle = pyewf.handle()
-        ewf_handle.open(filenames)
+                change_dir = "/" + ""  # Variable return from gui
+                current_dir = filesystemObject.open_dir(path="/" + change_dir)
 
-        # Open Pytsk3 handle on E01 image
-        imagehandle = ewf_Img_Info(ewf_handle)
-    else:
-        imagehandle = pytsk3.Img_Info(args.imagefile)
-    printpartitiontable(imagehandle)
+                # Only for test purpose
+                table = [["Name", "Type", "Size", "Create Date", "Modify Date"]]
 
+                for f in current_dir:
+                    name = f.info.name.name
+                    if hasattr(f.info.meta, 'type'):
+                        if f.info.meta.type == pytsk3.TSK_FS_META_TYPE_DIR:
+                            f_type = "DIR"
+                        else:
+                            f_type = "FILE"
+                        size = f.info.meta.size
+                        create = datetime.datetime.fromtimestamp(f.info.meta.crtime).strftime('%Y-%m-%d %H:%M:%S')
+                        modify = datetime.datetime.fromtimestamp(f.info.meta.mtime).strftime('%Y-%m-%d %H:%M:%S')
+                        table.append([name, f_type, size, create, modify])
+                # Only for test purpose
+                print(tabulate(table, headers="firstrow"))
 
-def printpartitiontable(imagehandle):
-    volume = pytsk3.Volume_Info(imagehandle)
-    for partition in volume:
-        print(partition.addr, partition.desc.decode('utf-8'), "%ss(%s)" % (partition.start, partition.start * 512),
-              partition.len)
-        try:
-            filesystemObject = pytsk3.FS_Info(imagehandle, offset=(partition.start * 512))
-        except:
-            # print("Partition has no supported file system")
-            continue
-        # print("File System Type Dectected ", filesystemObject.info.ftype)
+"""
+                # Functie van maken om aan te roepen vanuit de gui
+                filelist = []
+                for f in current_dir:
+                    name = f.info.name.name.decode('utf-8')
+                    if hasattr(f.info.meta, 'type'):
+                        if f.info.meta.type == pytsk3.TSK_FS_META_TYPE_DIR:
+                            f_type = "DIR"
+                        else:
+                            f_type = "FILE"
+                        size = f.info.meta.size
+                        create = datetime.datetime.fromtimestamp(f.info.meta.crtime).strftime('%Y-%m-%d %H:%M:%S')
+                        modify = datetime.datetime.fromtimestamp(f.info.meta.mtime).strftime('%Y-%m-%d %H:%M:%S')
+                        filelist.append([name, f_type, size, create, modify])
+                print(filelist)
 
-
-def listfiles(volume):
-    for partition in volume:
-        # Variabele return vanuit de GUI met gekozen partitie
-        if 'FAT16' in partition.desc.decode('utf-8'):
-            filesystemObject = pytsk3.FS_Info(imagehandle, offset=partition.start * 512)
-
-            change_dir = "/" + ""  # Variable return from gui
-            current_dir = filesystemObject.open_dir(path="/" + change_dir)
-
-            # Only for test purpose
-            table = [["Name", "Type", "Size", "Create Date", "Modify Date"]]
-
-            # Functie van maken om aan te roepen vanuit de gui
-            for f in current_dir:
-                name = f.info.name.name
-                if hasattr(f.info.meta, 'type'):
-                    if f.info.meta.type == pytsk3.TSK_FS_META_TYPE_DIR:
-                        f_type = "DIR"
-                    else:
-                        f_type = "FILE"
-                    size = f.info.meta.size
-                    create = datetime.datetime.fromtimestamp(f.info.meta.crtime).strftime('%Y-%m-%d %H:%M:%S')
-                    modify = datetime.datetime.fromtimestamp(f.info.meta.mtime).strftime('%Y-%m-%d %H:%M:%S')
-                    table.append([name, f_type, size, create, modify])
-            # Only for test purpose
-            print(tabulate(table, headers="firstrow"))
+"""
 
 
 if __name__ == "__main__":
@@ -211,4 +224,4 @@ if __name__ == "__main__":
 
     args = argparser.parse_args()
 
-    main(args.imagefile, args.imagetype)
+    test.main(args.imagefile, args.imagetype)
