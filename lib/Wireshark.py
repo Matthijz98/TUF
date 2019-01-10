@@ -2,8 +2,12 @@ from scapy.all import *
 
 # rdpcap importeren van scapy. Dit laadt de file in.
 # voer hier het pad naar de file in
-packets = rdpcap("")
+packets = rdpcap('')
+
+print(len(packets))
 
 # elke packet wordt getoond
 for packet in packets:
-    print(packets)
+    packets.show()
+    break
+    #print(packets)
