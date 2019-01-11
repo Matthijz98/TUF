@@ -1,7 +1,11 @@
+################
+# Sqlite Class #
+################
 class Sqlite:
 
     # import sqlite libary
     import sqlite3
+    from datetime import date, datetime
 
     # make all class atributes
     path = ''
@@ -12,7 +16,6 @@ class Sqlite:
         self.path = path
         self.filename = filename
         # make a conn object to the database
-        print("save db to: " + self.path + '/' + self.filename+'.db')
         self.conn = self.sqlite3.connect(self.path + '/' + self.filename+'.db')
         self.c = self.conn.cursor()
 
@@ -28,10 +31,12 @@ class Sqlite:
                        'FOREIGN KEY (user_id) REFERENCES users(user_id), '
                        'FOREIGN KEY (case_id) REFERENCES cases(case_id))')
         # make cases table
-        self.c.execute('CREATE TABLE IF NOT EXISTS cases(case_id integer primary key AUTOINCREMENT, '
-                       'created_date text, '
-                       'title text, '
-                       'description text)')
+        self.c.execute('CREATE TABLE IF NOT EXISTS cases('
+                       'case_id integer PRIMARY KEY AUTOINCREMENT,'
+                       'case_number integer,'
+                       'case_title varchar,'
+                       'case_note varchar,'
+                       'case_created timestamp')
         # make sessions table
         self.c.execute('CREATE TABLE IF NOT EXISTS sessions(session_id integer primary key AUTOINCREMENT, '
                        'user_id integer,'
@@ -102,8 +107,8 @@ class Sqlite:
         self.c.executemany('INSERT INTO logs (evidence_id, session_id, case_id, date_time, title, details) VALUES (?, ?, ?, ?, ?, ? )', values)
         return
 
-    def get_logitem(self, logId, fields = "*"):
-        self.c.execute("SELECT '%fields' FROM logs WHERE logId = '%lodId'" % fields % logId)
+    def get_logitem_details(self, logId):
+        self.c.execute("SELECT * FROM logs WHERE logId = '%lodId'" % logId)
         return self.c.fetchall()
 
     def get_logitems(self, args):
@@ -111,45 +116,26 @@ class Sqlite:
         return self.c.fetchall()
 
     def set_case(self, values):
-        self.c.executemany('INSERT INTO cases VALUES (?, ?, ?, ?)', values)
+        self.c.executemany('INSERT INTO cases(case_number, case_title, case_note, case_created) VALUES (?, ?, ?, ?)', values['number'], values['title'], values['note'], self.datetime.now())
+        self.conn.commit()
         return
 
     def get_case(self, case_id, fields='*'):
         self.c.execute("SELECT '%fields' WHERE case_id='%caseId'" % fields % case_id)
         return self.c.fetchall()
 
-    def get_cases(self, args):
-        self.c.execute("SELECT * FROM cases WHERE '%args'" % args)
+    def get_cases(self, args, fields='*'):
+        self.c.execute("SELECT '%fields' FROM cases WHERE '%args'" % fields % args)
         return self.c.fetchall()
 
     def set_evidence_item(self, values):
         self.c.executemany('INSERT INTO evidences values(?, ?, ?, ?)', values)
         return
 
-    def get_evidence_item_details(self, evidence_id, fields):
+    def get_evidence_item_details(self, evidence_id, fields='*'):
         self.c.execute("SELECT * FROM evidences WHERE evidence_id='%evidence_id'" % evidence_id)
         return self.c.fetchall()
 
     def get_evidence_items(self, args):
         self.c.execute("SELECT * FROM evidences WHERE '%args'" % args)
         return
-
-#
-# private functions
-#
-
-
-def query_build(args):
-    query = ""
-    for arg in args.keys():
-        query += str(arg) + " = " + str(args[arg]) + " AND "
-    return query
-
-
-if __name__ == '__main__':
-    args = {'test_id': '1', 'id': 'test'}
-    print(query_build(args))
-
-
-    #Sqlite = Sqlite('C:\Users\mzond\Desktop\DEV\TUF', 'database')
-    #Sqlite.setup_database()
