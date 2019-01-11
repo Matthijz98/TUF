@@ -31,12 +31,11 @@ class Sqlite:
                        'FOREIGN KEY (user_id) REFERENCES users(user_id), '
                        'FOREIGN KEY (case_id) REFERENCES cases(case_id))')
         # make cases table
-        self.c.execute('CREATE TABLE IF NOT EXISTS cases('
-                       'case_id integer PRIMARY KEY AUTOINCREMENT,'
-                       'case_number integer,'
-                       'case_title varchar,'
-                       'case_note varchar,'
-                       'case_created timestamp')
+        self.c.execute('CREATE TABLE IF NOT EXISTS cases(case_id integer PRIMARY KEY AUTOINCREMENT, '
+                       'case_number integer, '
+                       'case_title varchar, '
+                       'case_note varchar, '
+                       'case_created timestamp)')
         # make sessions table
         self.c.execute('CREATE TABLE IF NOT EXISTS sessions(session_id integer primary key AUTOINCREMENT, '
                        'user_id integer,'
@@ -116,7 +115,7 @@ class Sqlite:
         return self.c.fetchall()
 
     def set_case(self, values):
-        self.c.executemany('INSERT INTO cases(case_number, case_title, case_note, case_created) VALUES (?, ?, ?, ?)', values['number'], values['title'], values['note'], self.datetime.now())
+        self.c.execute('INSERT INTO cases(case_number, case_title, case_note, case_created) VALUES (?, ?, ?, ?)', (values['number'], values['title'], values['note'], self.datetime.now()))
         self.conn.commit()
         return
 
