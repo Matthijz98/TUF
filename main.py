@@ -3,10 +3,14 @@ if __name__ == '__main__':
     from lib import Settings
     from lib import Sqlite
 
+    path = 'C:/Users/mzond/Desktop/TufTest'
+    name = 'test'
+    db = Sqlite.Sqlite(path, name)
+    db.setup_database()
 
-    def makeCase(path, name):
-        db = Sqlite.Sqlite(path, name)
-        db.setup_database()
+    def makeCase(number, title, note):
+        values = {"name": number, "title": title, "note": note}
+        db.set_case(values)
 
     import PySimpleGUI as Sg
 
@@ -29,8 +33,9 @@ if __name__ == '__main__':
             win2_active = True
             win1.Hide()
             layout2 = [[Sg.Text('Create Case')],
-                       [Sg.Text('Case name: '), Sg.Input()],
-                       [Sg.Text('Case path: '), Sg.Input('filepath'), Sg.FileBrowse()],
+                       [Sg.Text('Case nummer: '), Sg.Input()],
+                       [Sg.Text('Case titel: '), Sg.Input('')],
+                       [Sg.Text('Case note: '), Sg.Input('')],
                        [Sg.Submit('Save case')],
                        [Sg.Button('Back'), Sg.Button('Next')]]
             win2 = Sg.Window('Create Case').Layout(layout2)
@@ -40,11 +45,13 @@ if __name__ == '__main__':
             if ev2 == 'Save case':
                 # fix the varibales so they will work
                 x = ev2, vals2[0]
-                name = x[1]
+                number = x[1]
                 y = ev2, vals2[1]
-                path = y[1]
+                title = y[1]
+                z = ev2, vals2[2]
+                note = z[1]
 
-                makeCase(str(path), str(name))
+                makeCase(number, title, note)
 
             if ev2 in (None, 'Back', '< Prev'):
                 win2_active = False
