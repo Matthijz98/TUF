@@ -4,7 +4,7 @@ from scapy.all import *
 # voer hier het pad naar de file in
 packets = rdpcap('')
 
-print(len(packets))
+print("Aantal packets:", len(packets))
 
 # elke packet wordt getoond
 for packet in packets:
