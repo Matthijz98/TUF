@@ -5,7 +5,7 @@ def hashing(filename):
 
     # buffer size instellen zodat grotere bestanden sneller worden gelezen
     buffer_size = 65536
-    hash = hashlib.md5()
+    hash = hashlib.sha1()
 
     # bestand openen
     with open(filename, 'rb') as file:
@@ -19,5 +19,5 @@ def hashing(filename):
 
 # file path aangeven en de md5 printen
 value = hashing(" ")
-print("De MD5-Hash:", value)
+print("De sha1-hash:", value)
 
