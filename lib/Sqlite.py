@@ -31,12 +31,11 @@ class Sqlite:
                        'FOREIGN KEY (user_id) REFERENCES users(user_id), '
                        'FOREIGN KEY (case_id) REFERENCES cases(case_id))')
         # make cases table
-        self.c.execute('CREATE TABLE IF NOT EXISTS cases ('
-                       'case_id integer PRIMARY KEY AUTOINCREMENT,'
-                       'case_number integer,'
-                       'case_title varchar,'
-                       'case_note varchar,'
-                       'case_created datetime')
+        self.c.execute('CREATE TABLE IF NOT EXISTS cases(case_id integer PRIMARY KEY AUTOINCREMENT, '
+                       'case_number integer, '
+                       'case_title varchar, '
+                       'case_note varchar, '
+                       'case_created timestamp)')
         # make sessions table
         self.c.execute('CREATE TABLE IF NOT EXISTS sessions(session_id integer primary key AUTOINCREMENT, '
                        'user_id integer,'
@@ -67,20 +66,19 @@ class Sqlite:
                        'type integer,'
                        'FOREIGN KEY (case_id) REFERENCES cases(case_id))')
         # make files table
-        self.c.execute('CREATE TABLE IF NOT EXISTS files(file_id integer primary key AUTOINCREMENT, '
-                       'evidence_id integer, '
-                       'file_hash_md5 text, '
-                       'hash_md5 text, '
-                       'hash_sha265 text, '
-                       'hash_sha512 text, '
-                       'hash_sha1 text, '
-                       'title text, '
-                       'date_created text, '
-                       'date_last_modified text, '
-                       'file_path text, '
-                       'size text, '
-                       'extention text, '
-                       'FOREIGN KEY (evidence_id) REFERENCES evidences(evidence_id))')
+        self.c.execute('CREATE TABLE IF NOT EXISTS files ('
+                       'file_id integer PRIMARY KEY AUTOINCREMENT,'
+                       'partition_id blob,'
+                       'file_md5 text,'
+                       'file_sha256 text,'
+                       'file_sha1 text,'
+                       'title varchar,'
+                       'date_created datetime,'
+                       'date_last_modified datetime,'
+                       'file_path varchar,'
+                       'size integer,'
+                       'extention varchar,'
+                       'file_type integer)')
         # make virustotal_reports
         self.c.execute('CREATE TABLE IF NOT EXISTS virustotal_reports(scan_id integer primary key AUTOINCREMENT, '
                        'file_id integer, '
@@ -116,7 +114,7 @@ class Sqlite:
         return self.c.fetchall()
 
     def set_case(self, values):
-        self.c.executemany('INSERT INTO cases(case_number, case_title, case_note, case_created) VALUES (?, ?, ?, ?)', values['number'], values['title'], values['note'], self.datetime.now())
+        self.c.execute('INSERT INTO cases(case_number, case_title, case_note, case_created) VALUES (?, ?, ?, ?)', (values['number'], values['title'], values['note'], self.datetime.now()))
         self.conn.commit()
         return
 
@@ -140,4 +138,10 @@ class Sqlite:
         self.c.execute("SELECT * FROM evidences WHERE '%args'" % args)
         return
 
-if __name__ == '__main__':
+    def set_files(self, values):
+        self.c.executemany('INSERT INTO files (partition_id, file_md5, file_sha256, file_sha1, title, date_created, date_last_modified, file_path, size, extention, file_type) '
+                           'VALUES (? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,?)',
+                           (values))
+                           #(values["partition_id"], values['md5'], values["sha256"], values["sha1"], values['tile'], values['created'], values['modified'], values['file_path'], values['size'], values['extention'], values['file_type']))
+        self.conn.commit()
+
