@@ -4,6 +4,9 @@ import os
 import zipfile
 import datetime
 import argparse
+import hashlib
+
+import lib.Sqlite
 
 import pyewf
 import sys
@@ -129,7 +132,7 @@ def e01(filenames):
             outfile.write(filedata)"""
 
 class test():
-    def main(imagefile, imagetype, ):
+    def main(imagefile, imagetype, change_dir=""):
         if (imagetype == "e01"):  # Vervangen door return uit de GUI
             filenames = pyewf.glob(imagefile)
             ewf_handle = pyewf.handle()
@@ -156,27 +159,55 @@ class test():
         for partition in volume:
             # Variabele return vanuit de GUI met gekozen partitie
             if 'FAT16' in partition.desc.decode('utf-8'):
+                partition_id = partition.addr
                 filesystemObject = pytsk3.FS_Info(imagehandle, offset=partition.start * 512)
 
-                change_dir = "/" + ""  # Variable return from gui
-                current_dir = filesystemObject.open_dir(path="/" + change_dir)
+                root_dir = "/"
+                change_dir = change_dir + "/"   # Variable return from gui
+                current_dir = root_dir + change_dir
+                open_current_dir = filesystemObject.open_dir(path=current_dir)
 
                 # Only for test purpose
                 table = [["Name", "Type", "Size", "Create Date", "Modify Date"]]
 
                 # Functie van maken om aan te roepen vanuit de gui
                 filelist = []
-                for f in current_dir:
+                for f in open_current_dir:
                     name = f.info.name.name.decode('utf-8')
                     if hasattr(f.info.meta, 'type'):
                         if f.info.meta.type == pytsk3.TSK_FS_META_TYPE_DIR:
                             f_type = "DIR"
+                            extension = ""
                         else:
                             f_type = "FILE"
-                        size = f.info.meta.size
-                        create = datetime.datetime.fromtimestamp(f.info.meta.crtime).strftime('%Y-%m-%d %H:%M:%S')
-                        modify = datetime.datetime.fromtimestamp(f.info.meta.mtime).strftime('%Y-%m-%d %H:%M:%S')
-                        filelist.append([name, f_type, size, create, modify])
+                            if "." in name:
+                                extension = name.rsplit(".")[-1].lower()
+                    """
+                    md5_hash = hashlib.md5()  # MD5 FUNCTIE VAN DYLAN
+                    md5_hash.update(f.read_random(0, f_size))
+                    md5_hash2 = md5_hash.hexdigest
+
+                    sha256_hash = hashlib.sha256()
+                    sha256_hash.update(f.read_random(0, f_size))
+                    sha256_hash2 = sha256_hash.hexdigest
+
+                    sha1_hash = hashlib.sha1()
+                    sha1_hash.update(f.read_random(0, f_size))
+                    sha1_hash2 = sha1_hash.hexdigest
+                    """
+                    md5_hash2 = ""
+                    sha256_hash2 = ""
+                    sha1_hash2 = ""
+
+
+                    size = f.info.meta.size
+                    filepath = current_dir + f.info.name.name.decode('utf-8')
+                    create = datetime.datetime.fromtimestamp(f.info.meta.crtime).strftime('%Y-%m-%d %H:%M:%S')
+                    modify = datetime.datetime.fromtimestamp(f.info.meta.mtime).strftime('%Y-%m-%d %H:%M:%S')
+                    filelist.append([partition_id, md5_hash2, sha256_hash2, sha1_hash2, name, create, modify, filepath, size, extension, f_type])
+                # db = lib.Sqlite.Sqlite(path=r"C:\Users\Gido Scherpenhuizen\Documents\,School\IIPFIT5\Project Files", filename="test")
+                # db.setup_database()
+                # db.set_files(filelist)
                 return filelist
 
 """
