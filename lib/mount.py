@@ -140,21 +140,19 @@ class test():
         else:
             imagehandle = pytsk3.Img_Info(imagefile)
         volume = pytsk3.Volume_Info(imagehandle)
-        test.printpartitiontable(imagehandle, volume)
-        test.listfiles(volume, imagehandle)
+        # test.printpartitiontable(imagehandle, volume)
+        # test.listfiles(volume, imagehandle)
 
-    def printpartitiontable(imagehandle, volume):
-        for partition in volume:
-            print(partition.addr, partition.desc.decode('utf-8'), "%ss(%s)" % (partition.start, partition.start * 512),
-                  partition.len)
-            try:
-                filesystemObject = pytsk3.FS_Info(imagehandle, offset=(partition.start * 512))
-            except:
+        #for partition in volume:
+         #   print(partition.addr, partition.desc.decode('utf-8'), "%ss(%s)" % (partition.start, partition.start * 512),
+          #        partition.len)
+           # try:
+            #    filesystemObject = pytsk3.FS_Info(imagehandle, offset=(partition.start * 512))
+            #except:
                 # print("Partition has no supported file system")
-                continue
+             #   continue
             # print("File System Type Dectected ", filesystemObject.info.ftype)
 
-    def listfiles(volume, imagehandle):
         for partition in volume:
             # Variabele return vanuit de GUI met gekozen partitie
             if 'FAT16' in partition.desc.decode('utf-8'):
@@ -166,6 +164,22 @@ class test():
                 # Only for test purpose
                 table = [["Name", "Type", "Size", "Create Date", "Modify Date"]]
 
+                # Functie van maken om aan te roepen vanuit de gui
+                filelist = []
+                for f in current_dir:
+                    name = f.info.name.name.decode('utf-8')
+                    if hasattr(f.info.meta, 'type'):
+                        if f.info.meta.type == pytsk3.TSK_FS_META_TYPE_DIR:
+                            f_type = "DIR"
+                        else:
+                            f_type = "FILE"
+                        size = f.info.meta.size
+                        create = datetime.datetime.fromtimestamp(f.info.meta.crtime).strftime('%Y-%m-%d %H:%M:%S')
+                        modify = datetime.datetime.fromtimestamp(f.info.meta.mtime).strftime('%Y-%m-%d %H:%M:%S')
+                        filelist.append([name, f_type, size, create, modify])
+                return filelist
+
+"""
                 for f in current_dir:
                     name = f.info.name.name
                     if hasattr(f.info.meta, 'type'):
@@ -181,23 +195,6 @@ class test():
                 print(tabulate(table, headers="firstrow"))
 
 """
-                # Functie van maken om aan te roepen vanuit de gui
-                filelist = []
-                for f in current_dir:
-                    name = f.info.name.name.decode('utf-8')
-                    if hasattr(f.info.meta, 'type'):
-                        if f.info.meta.type == pytsk3.TSK_FS_META_TYPE_DIR:
-                            f_type = "DIR"
-                        else:
-                            f_type = "FILE"
-                        size = f.info.meta.size
-                        create = datetime.datetime.fromtimestamp(f.info.meta.crtime).strftime('%Y-%m-%d %H:%M:%S')
-                        modify = datetime.datetime.fromtimestamp(f.info.meta.mtime).strftime('%Y-%m-%d %H:%M:%S')
-                        filelist.append([name, f_type, size, create, modify])
-                print(filelist)
-
-"""
-
 
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser(description='')
@@ -225,5 +222,3 @@ if __name__ == "__main__":
     args = argparser.parse_args()
 
     test.main(args.imagefile, args.imagetype)
-
-# LOXXD
