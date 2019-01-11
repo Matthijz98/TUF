@@ -9,7 +9,7 @@ if __name__ == '__main__':
     db.setup_database()
 
     def makeCase(number, title, note):
-        values = {"name": number, "title": title, "note": note}
+        values = {"number": number, "title": title, "note": note}
         db.set_case(values)
 
     import PySimpleGUI as Sg
