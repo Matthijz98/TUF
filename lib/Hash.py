@@ -1,3 +1,8 @@
+"""
+Gemaakt door: 
+Studentnummer:
+"""
+
 # Hash library importeren
 import hashlib
 
@@ -10,19 +15,22 @@ def hashing(filename):
     # sha1 hash ophalen uit de library
     hash = hashlib.sha1()
 
-    # bestand openen
-    with open(filename, 'rb') as file:
-        while True:
-            # bestand wordt gelezen met de meegegeven buffer_size
-            buffer = file.read(buffer_size)
-            if not buffer:
-                break
-            hash.update(buffer)
-    # hash waarde wordt terugeggeven
-    return hash.hexdigest()
+    try:
+        # bestand openen
+        with open(filename, 'rb') as file:
+            while True:
+                # bestand wordt gelezen met de meegegeven buffer_size
+                buffer = file.read(buffer_size)
+                if not buffer:
+                    break
+                hash.update(buffer)
+        # hash waarde wordt terugeggeven
+        return hash.hexdigest()
+    except IOError:
+        print("Er gaat iets fout met het lezen van het bestand.")
 
 
 # file path aangeven en de md5 printen
-value = hashing(" ")
+value = hashing("")
 print("De sha1-hash:", value)
 
