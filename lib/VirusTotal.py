@@ -1,3 +1,8 @@
+"""
+Gemaakt door:
+Studentnummer:
+"""
+
 # De publicApi importeren van virustotal
 from virus_total_apis import PublicApi
 # json library importeren voor het rapport van virustotal
@@ -18,20 +23,26 @@ class VirusTotal:
         self.api = api
 
     # Hiermee wordt een hashwaarde van het bestand berekent
-    def hashFile(self, filename, buffer_size=65536):
+    def hashFile(self, filename):
+
+        # buffer size instellen zodat grotere bestanden sneller worden gelezen
+        buffer_size = 65536
+        # sha1 hash ophalen uit de library
+        hash = hashlib.sha1()
+
         try:
-            file = open(filename, 'rb')
+            # bestand openen
+            with open(filename, 'rb') as file:
+                while True:
+                    # bestand wordt gelezen met de meegegeven buffer_size
+                    buffer = file.read(buffer_size)
+                    if not buffer:
+                        break
+                    hash.update(buffer)
+            # hash waarde wordt terugeggeven
+            return hash.hexdigest()
         except IOError:
-            return None
-        except:
-            return None
-        hashing = hashlib.sha1()
-        buffer = file.read(buffer_size)
-        while len(buffer) > 0:
-            hashing.update(buffer)
-            buffer = file.read(buffer_size)
-        file.close()
-        return hashing.hexdigest()
+            print("Er gaat iets fout met het lezen van het bestand.")
 
     # Met deze functie wordt de hashwaarde verstuurd naar VirusTotal
     def send_hash(self, hashing):
@@ -59,9 +70,9 @@ class VirusTotal:
             if result['results']['response_code'] == 0:
                 print('geen resulaten')
 
-                params = {'apikey': 'api key invoeren'}
-                files = {'file': ('path naar bestand',
-                                  open('path naar bestand', 'rb'))}
+                params = {'apikey': ''}
+                files = {'file': ('',
+                                  open('', 'rb'))}
 
                 response = requests.post('https://www.virustotal.com/vtapi/v2/file/scan', files=files, params=params)
 
@@ -81,6 +92,6 @@ class VirusTotal:
 
 
 if __name__ == '__main__':
-    vt = VirusTotal('api key invoeren')
-    vt.send_hash(vt.hashFile(filename='path aangeven'))
+    vt = VirusTotal('')
+    vt.send_hash(vt.hashFile(filename=''))
 
