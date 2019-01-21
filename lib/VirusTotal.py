@@ -16,7 +16,7 @@ import requests
 # klasse VirusTotal aanmaken voor
 class VirusTotal:
     # Hier wordt de key meegegeven
-    api = ''
+    api = '576218e742aa0a0470bcc4a59146b58ab585d44cc36a84fd837594ec8005bed6'
 
     # Hier wordt de key aangeroepen
     def __init__(self, api):
@@ -50,10 +50,10 @@ class VirusTotal:
         api = PublicApi(self.api)
 
         response = api.get_file_report(hashing)
-        self.report(response)
+        return response
 
     # Hier wordt het rapport opgevraagd van VirusTotal
-    def report(self, response):
+    def print_report(self, response):
         # string genereren
         dump = json.dumps(response)
         # object maken
@@ -65,33 +65,38 @@ class VirusTotal:
         # Results van VirusTotal wordt doorgegeven aan results
         results = result['results']
 
-        # Als VirusTotal de hashwaarde niet herkend, wordt dit uitgevoerd
-        if results is []:
-            if result['results']['response_code'] == 0:
-                print('geen resulaten')
 
-                params = {'apikey': ''}
-                files = {'file': ('',
-                                  open('', 'rb'))}
+    def upload_file(self, filename):
+        params = {'apikey': self.api}
+        files = {'file': ('',
+                          open(filename, 'rb'))}
 
-                response = requests.post('https://www.virustotal.com/vtapi/v2/file/scan', files=files, params=params)
+        response = requests.post('https://www.virustotal.com/vtapi/v2/file/scan', files=files, params=params)
+        print(response)
+        json_response = response.json()
+        print("VirusTotal geeft het volgende terug:", json_response, "\n")
+        return json_response
 
-                json_response = response.json()
-                print("VirusTotal geeft het volgende terug:", json_response, "\n")
-
-            elif result['results']['response_code'] == 1:
-                scans = results['scans']
-
-                for item in scans.items():
-                    for detect, output in scans.items():
-                        # print(output.get('detected'))
-                        if output is 'True':
-                            print(output)
-                            break
-        return False
+    def test_file(self, filename):
+        # hash to file
+        filehash = self.hashFile(filename)
+        # get the reponse of the hash upload
+        response_hash = self.send_hash(filehash)
+        print("response: ", response_hash)
+        # check if the result reponse code is 0
+        if response_hash['results']['response_code'] == 0:
+            # if reponse is 0 upload the hole file and return the response
+            return self.report(self.upload_file())
+        else:
+            # if the hash is working just return that
+            return self.report(response_hash)
 
 
 if __name__ == '__main__':
     vt = VirusTotal('')
-    vt.send_hash(vt.hashFile(filename=''))
+    testfile = "C:/Users/mzond/OneDrive/Downloads/header-server.png"
+    print(vt.hashFile(testfile))
+    print(vt.send_hash(vt.hashFile(testfile)))
+    print(vt.upload_file(testfile))
+    print(vt.test_file(testfile))
 
