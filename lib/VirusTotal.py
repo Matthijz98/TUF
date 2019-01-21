@@ -1,52 +1,86 @@
+# De publicApi importeren van virustotal
 from virus_total_apis import PublicApi
+# json library importeren voor het rapport van virustotal
 import json
+# hashlib importeren om eerst een hash waarde te berekenen voor virustotal
 import hashlib
+# requestst importeren voor het versturen van het bestand
+import requests
 
 
-def hashing(filename):
+# klasse VirusTotal aanmaken voor
+class VirusTotal:
+    # Hier wordt de key meegegeven
+    api = ''
 
-    hash = hashlib.sha1()
+    # Hier wordt de key aangeroepen
+    def __init__(self, api):
+        self.api = api
 
-    with open(filename, 'rb') as file:
-        buffer = file.read()
-        hash.update(buffer)
-    return hash.hexdigest()
+    # Hiermee wordt een hashwaarde van het bestand berekent
+    def hashFile(self, filename, buffer_size=65536):
+        try:
+            file = open(filename, 'rb')
+        except IOError:
+            return None
+        except:
+            return None
+        hashing = hashlib.sha1()
+        buffer = file.read(buffer_size)
+        while len(buffer) > 0:
+            hashing.update(buffer)
+            buffer = file.read(buffer_size)
+        file.close()
+        return hashing.hexdigest()
 
+    # Met deze functie wordt de hashwaarde verstuurd naar VirusTotal
+    def send_hash(self, hashing):
+        # De PublicApi wordt doorgegeven aan api
+        api = PublicApi(self.api)
 
-value = hashing("")
-print("De sha1-hash:", value)
+        response = api.get_file_report(hashing)
+        self.report(response)
 
+    # Hier wordt het rapport opgevraagd van VirusTotal
+    def report(self, response):
+        # string genereren
+        dump = json.dumps(response)
+        # object maken
+        result = json.loads(dump)
 
-def send_hash(hash):
-    key = ''
+        # De json wordt netjes onder elkaar geprint
+        print(json.dumps(result, indent=4, sort_keys=True))
 
-    api = PublicApi(key)
+        # Results van VirusTotal wordt doorgegeven aan results
+        results = result['results']
 
-    response = api.get_file_report(hash)
-    report(response)
+        # Als VirusTotal de hashwaarde niet herkend, wordt dit uitgevoerd
+        if results is []:
+            if result['results']['response_code'] == 0:
+                print('geen resulaten')
 
+                params = {'apikey': 'api key invoeren'}
+                files = {'file': ('path naar bestand',
+                                  open('path naar bestand', 'rb'))}
 
-def report(response):
-    # string genereren
-    dump = json.dumps(response)
-    # object maken
-    result = json.loads(dump)
+                response = requests.post('https://www.virustotal.com/vtapi/v2/file/scan', files=files, params=params)
 
-    print(json.dumps(result, indent=4, sort_keys=True))
+                json_response = response.json()
+                print("VirusTotal geeft het volgende terug:", json_response, "\n")
 
-    results = result['results']
+            elif result['results']['response_code'] == 1:
+                scans = results['scans']
 
-    if results is []:
+                for item in scans.items():
+                    for detect, output in scans.items():
+                        # print(output.get('detected'))
+                        if output is 'True':
+                            print(output)
+                            break
         return False
-    scans = results['scans']
-
-    for item in scans.items():
-        for detect, output in scans.items():
-            #print(output.get('detected'))
-            if output is 'True':
-                print(output)
-                break
 
 
 if __name__ == '__main__':
-    send_hash(value)
+    vt = VirusTotal('api key invoeren')
+    vt.send_hash(vt.hashFile(filename='path aangeven'))
+
