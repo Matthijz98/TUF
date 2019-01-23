@@ -124,9 +124,9 @@ class Sqlite:
         return
 
     # get all the details from a case where the
-    def get_case(self, case_id, fields='*'):
-        self.c.execute("SELECT * FROM cases WHERE case_id='%caseId'" % fields % case_id)
-        return self.c.fetchall()
+    def get_case(self, case_id):
+        self.c.execute("SELECT * FROM cases WHERE case_id='%s'" % case_id)
+        return self.c.fetchone()
 
     # get all cases that meet the arguments
     def get_cases(self):

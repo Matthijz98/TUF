@@ -9,6 +9,8 @@ if __name__ == '__main__':
     name = 'database'
     db = ''
     ingelogt = False
+    # the currently open case
+    active_case = ''
 
 
     def makeCase(number, title, note):
@@ -59,39 +61,59 @@ if __name__ == '__main__':
                     check_ingelogt = db.check_user(username, password)
 
                     if check_ingelogt is True:
+                        ingelogt = True
                         Sg.Popup("te bent ingelogt")
                         break
                     elif check_ingelogt is False:
+                        ingelogt = False
                         Sg.Popup("deze combinatie van gebruikers naam en wachtwoord bestaat niet")
                         ev2, vals2 = win2.Read()
                     else:
                         Sg.Popup("er is iets fout gegaan")
+                        ingelogt = False
                 if ev2 == 'Create User':
                     values = [vals2[0], vals2[1]]
                     db.set_user(values)
                     Sg.Popup("Een user met de gebruikersnaam " + vals2[0] + " gemaakt")
+                    ingelogt = True
+                    break
                 if ev2 is None:
                     break
 
-        if not win4_active and ev2 == 'Login' and ingelogt is True:
-            win4_active = True
+
+
+
+        if not win3_active and ingelogt is True:
+            cases = db.get_cases()
+            table = Sg.Table(cases,
+                             headings=["case", "case id", "title", "description", "date created"],
+                             enable_events=True)
+            win3_active = True
             win2.Hide()
-            layout4 = [[Sg.T(' ' * 20), Sg.Text('Welcome to Turtle Forensics!')],
+            layout3 = [[Sg.T(' ' * 20), Sg.Text('Welcome to Turtle Forensics!')],
                        [Sg.Text('', key='_OUTPUT_')],
                        [Sg.Text('Would you like to create a new case or open a recent one?')],
-                       [Sg.Listbox(values=['Listbox 1', 'Listbox 2', 'Listbox 3'], size=(20, 6))],
+                       [table],
                        [Sg.Button('Open Case'), Sg.Button('Create Case')]]
-            win4 = Sg.Window('TUF - Turtle Forensics', size=(400, 300), icon='ICON.ico').Layout(layout4)
+            win3 = Sg.Window('TUF - Turtle Forensics', icon='ICON.ico').Layout(layout3)
 
-            if win4_active:
-                ev4, vals4 = win4.Read()
+            while True:
+                if win3_active:
 
-                if ev4 is None:
-                    break
+                    ev3, vals3 = win3.Read()
 
-        if not win5_active and ev4 == 'Create Case' and ingelogt is True:
+                    if ev3 == 'clicked':
+
+                        Sg.Popup(vals3)
+                    if ev3 == 'Open Case':
+                        active_case = cases[vals3[0][0]][0]
+                        break
+                    if ev3 is None:
+                        break
+
+        if not win5_active and ev3 == 'Create Case' and ingelogt is True:
             win5_active = True
-            win4.Hide()
+            win3.Hide()
             layout5 = [[Sg.Text('Case Number: '), Sg.Input()],
                        [Sg.Text('Case Title:      '), Sg.Input('')],
                        [Sg.Text('Case Note:     '), Sg.Input()],
@@ -128,6 +150,18 @@ if __name__ == '__main__':
                         print('Hello mijn nama mama')
                     if vals6['RAW']:
                         print('raw')
+
+        # case overvieuw
+        if not win6_active and ev3 == 'Open Case' and ingelogt is True:
+            case = db.get_case(1)
+            win3.Hide()
+            print(case)
+            layout6 = [[Sg.Radio('E01', "Image", key='e01'), Sg.Radio('RAW', "Image", key='RAW')],
+                       [Sg.Text('Image source:    '), Sg.Input(), Sg.FolderBrowse()],
+                       [Sg.Checkbox('Hash Image after Indexing')],
+                       [Sg.Button('Back'), Sg.Button('Save')]]
+            win6 = Sg.Window('Turtle Forensics - case ' + case[2], icon='ICON.ico').Layout(layout6)
+
 
 """           if ev2 in (None, 'Back', '< Prev'):
                 win2_active = False
