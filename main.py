@@ -2,11 +2,14 @@ if __name__ == '__main__':
     # from lib import GUI as gui
     # from lib import Settings
     from lib import Sqlite
+    import os
 
-    path = 'C:/Users/Oskar/Desktop/test'
-    name = 'test'
-    db = Sqlite.Sqlite(path, name)
-    db.setup_database()
+    path = os.path.dirname(os.path.realpath(__file__))
+    print(path)
+    name = 'database'
+    db = ''
+    ingelogt = False
+
 
     def makeCase(number, title, note):
         values = {"number": number, "title": title, "note": note}
@@ -15,7 +18,7 @@ if __name__ == '__main__':
     import PySimpleGUI as Sg
 
     layout = [[Sg.Text('At which location would you like to save the TUF database?')],
-              [Sg.Input(), Sg.FolderBrowse()],
+              [Sg.Input(path), Sg.FolderBrowse()],
               [Sg.T(' ' * 25), Sg.Button('Yes'), Sg.Button('No')]]
     win1 = Sg.Window('TUF - Turtle Forensics', icon='ICON.ico').Layout(layout)
 
@@ -30,6 +33,12 @@ if __name__ == '__main__':
         if ev1 == 'No':
             break
 
+        if ev1 == 'Yes':
+            if path != vals1[0]:
+                path = vals1[0]
+            db = Sqlite.Sqlite(path, name)
+            db.setup_database()
+
         if not win2_active and ev1 == 'Yes':
             win2_active = True
             win1.Hide()
@@ -42,36 +51,29 @@ if __name__ == '__main__':
         if win2_active:
             ev2, vals2 = win2.Read()
 
-            if ev2 is None:
-                break
+            while ingelogt is False:
 
-        if not win3_active and ev2 == 'Create User':
-            win3_active = True
-            win2.Hide()
-            layout3 = [[Sg. Text('Create a new user.')],
-                       [Sg.Text('Username'), Sg.Input()],
-                       [Sg.Text('Password'), Sg.Input()],
-                       [Sg.Button('Create User')]]
-            win3 = Sg.Window('TUF - Turtle Forensics', size=(400, 300), icon='ICON.ico').Layout(layout3)
+                if ev2 == 'Login':
+                    username = vals2[0]
+                    password = vals2[1]
+                    check_ingelogt = db.check_user(username, password)
 
-        if win3_active:
-            ev3, vals3 = win3.Read()
+                    if check_ingelogt is True:
+                        Sg.Popup("te bent ingelogt")
+                        break
+                    elif check_ingelogt is False:
+                        Sg.Popup("deze combinatie van gebruikers naam en wachtwoord bestaat niet")
+                        ev2, vals2 = win2.Read()
+                    else:
+                        Sg.Popup("er is iets fout gegaan")
+                if ev2 == 'Create User':
+                    values = [vals2[0], vals2[1]]
+                    db.set_user(values)
+                    Sg.Popup("Een user met de gebruikersnaam " + vals2[0] + " gemaakt")
+                if ev2 is None:
+                    break
 
-            if ev3 is None:
-                break
-
-            if ev3 == 'Create User':
-                if vals3['user'] and ['pass']:
-                    db.set_user(vals3)
-
-        if ev3 == 'Create User':
-            win3.Close()
-            win2_active = True
-            win3_active = False
-            win2.UnHide()
-            ev2, vals2 = win2.Read()
-
-        if not win4_active and ev2 == 'Login':
+        if not win4_active and ev2 == 'Login' and ingelogt is True:
             win4_active = True
             win2.Hide()
             layout4 = [[Sg.T(' ' * 20), Sg.Text('Welcome to Turtle Forensics!')],
@@ -81,13 +83,13 @@ if __name__ == '__main__':
                        [Sg.Button('Open Case'), Sg.Button('Create Case')]]
             win4 = Sg.Window('TUF - Turtle Forensics', size=(400, 300), icon='ICON.ico').Layout(layout4)
 
-        if win4_active:
-            ev4, vals4 = win4.Read()
+            if win4_active:
+                ev4, vals4 = win4.Read()
 
-            if ev4 is None:
-                break
+                if ev4 is None:
+                    break
 
-        if not win5_active and ev4 == 'Create Case':
+        if not win5_active and ev4 == 'Create Case' and ingelogt is True:
             win5_active = True
             win4.Hide()
             layout5 = [[Sg.Text('Case Number: '), Sg.Input()],
@@ -96,7 +98,7 @@ if __name__ == '__main__':
                        [Sg.Button('Back'), Sg.Button('Save Case')]]
             win5 = Sg.Window('Turtle Forensics - Create Case', icon='ICON.ico').Layout(layout5)
 
-        if win5_active:
+        if win5_active and ingelogt is True:
             ev5, vals5 = win5.Read()
             if ev5 == 'Save Case':
                 x = ev5, vals5[0]

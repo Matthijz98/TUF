@@ -22,7 +22,7 @@ class Sqlite:
     def setup_database(self):
         # make users table
         self.c.execute('CREATE TABLE IF NOT EXISTS users(user_id integer primary key AUTOINCREMENT, '
-                       'username text, '
+                       'user_name text, '
                        'password text) ')
         # make case_assignments table
         self.c.execute('CREATE TABLE IF NOT EXISTS case_assignments(assiment_id integer primary key AUTOINCREMENT, '
@@ -94,10 +94,6 @@ class Sqlite:
                        'hnds integer, '
                        'time integer, '
                        'FOREIGN KEY (evidence_id) REFERENCES evidences(evidence_id))')
-        self.c.execute('CREATE TABLE users ( user_id integer PRIMARY KEY AUTOINCREMENT,'
-                       'username varchar,'
-                       'password varchar,'
-                       'created_at datetime)')
         # commit all changes to the database
         self.conn.commit()
         # close connection to the database
@@ -165,22 +161,28 @@ class Sqlite:
 
     # make a new user in the databse
     def set_user(self, values):
-        self.c.execute('INSERT INTO users (user_name, password) VALUES(%username, %password)', (values))
+        self.c.execute('INSERT INTO users(user_name, password) VALUES(?, ?)', (values))
         self.conn.commit()
 
     # check if the user password is correct
     def check_user(self, username, password):
-        self.c.execute('SELECT password FROM users WHERE username = %user' % username)
-        if password == self.c.fetchall():
-            return True
-        else:
+        self.c.execute("SELECT * FROM users WHERE users.user_name = '%s'" % username)
+        result = self.c.fetchone()
+        if result is None:
+            print("geen asjdf")
             return False
+        if result is not None:
+            print("meer dan 0")
+            if password == self.c.fetchone()[2]:
+                return True
+            else:
+                return False
 
     # update the password from a user only if the old password is correct
     def update_password(self, old_password, new_password, username):
         # fist check if the old password is correct
         if self.check_user(username, old_password) is True:
-            self.c.execute('UPDATE users SET password = %password WHERE user_id' % new_password)
+            self.c.execute("UPDATE users SET password = %password WHERE users.user_id = '%s'" % new_password)
             return True
             self.conn.commit
         else:
