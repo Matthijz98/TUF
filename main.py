@@ -13,7 +13,6 @@ if __name__ == '__main__':
     # the currently open case
     active_case = ''
 
-
     def makeCase(number, title, note):
         values = {"number": number, "title": title, "note": note}
         db.set_case(values)
@@ -81,21 +80,20 @@ if __name__ == '__main__':
                     db.set_user(values)
                     Sg.Popup("The user with the name " + vals2[0] + " has been created!")
                     loggedin = True
-
-                elif check_loggedin is False:
-                    check_loggedin = db.check_user(username, password)
-                    Sg.Popup("The user with the name " + vals2[0] + " already exists!")
+                    break
 
                 if ev2 is None:
                     break
 
         if not win3_active and ev2 == 'Login' and loggedin is True:
+            win3_active = True
+            win2.Hide()
+
             cases = db.get_cases()
             table = Sg.Table(cases,
                              headings=["case", "case id", "title", "description", "date created"],
                              enable_events=True)
-            win3_active = True
-            win2.Hide()
+
             layout3 = [[Sg.T(' ' * 20), Sg.Text('Welcome to Turtle Forensics!')],
                        [Sg.Text('', key='_OUTPUT_')],
                        [Sg.Text('Would you like to create a new case or open a recent one?')],
@@ -105,7 +103,7 @@ if __name__ == '__main__':
 
             while True:
                 if win3_active:
-                    ev3, vals3 = win3.Read()
+                    win3.Read()
 
                     if ev3 == 'clicked':
                         Sg.Popup(vals3)
