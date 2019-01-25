@@ -1,3 +1,4 @@
+# main.py
 if __name__ == '__main__':
     # from lib import GUI as gui
     # from lib import Settings
