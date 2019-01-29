@@ -1,10 +1,7 @@
-# main.py
 if __name__ == '__main__':
-    from lib import GUI as gui
-    from lib import Settings
-    from lib import Sqlite
     import os
     import PySimpleGUI as Sg
+    from lib import Sqlite
 
     path = os.path.dirname(os.path.realpath(__file__))
     print(path)
