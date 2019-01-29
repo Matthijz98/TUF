@@ -13,7 +13,6 @@ if __name__ == '__main__':
     # the currently open case
     active_case = ''
 
-
     def makeCase(number, title, note):
         values = {"number": number, "title": title, "note": note}
         db.set_case(values)
@@ -41,6 +40,7 @@ if __name__ == '__main__':
                 path = vals1[0]
             db = Sqlite.Sqlite(path, name)
             db.setup_database()
+            db.log2csv()
 
         if not win2_active and ev1 == 'Yes':
             win2_active = True
@@ -72,12 +72,19 @@ if __name__ == '__main__':
                     else:
                         Sg.Popup("er is iets fout gegaan")
                         ingelogt = False
-                if ev2 == 'Create User':
-                    values = [vals2[0], vals2[1]]
-                    db.set_user(values)
-                    Sg.Popup("Een user met de gebruikersnaam " + vals2[0] + " gemaakt")
-                    ingelogt = True
-                    break
+
+                if ev2 == 'Create User' and ingelogt is False:
+                    create = db.check_username(vals2[0])
+
+                    if create is False:
+                        db.set_user(username=vals2[0], password=vals2[1])
+                        Sg.Popup("Een user met de gebruikersnaam " + vals2[0] + " gemaakt")
+                        ingelogt = True
+                    else:
+                        Sg.Popup("deze gebruikersnaam bestaat al")
+                        ev2, vals2 = win2.Read()
+
+
                 if ev2 is None:
                     break
 
