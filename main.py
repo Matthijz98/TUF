@@ -11,7 +11,6 @@ if __name__ == '__main__':
     name = 'database'
     db = ''
     loggedin = False
-    created = False
     # the currently open case
     active_case = ''
 
@@ -56,22 +55,11 @@ if __name__ == '__main__':
         if loginWindow_active:
             ev2, vals2 = loginWindow.Read()
 
-            if ev2 == "Create User":
-                created = False
-                username = vals2[0]
-
-                print("creating")
-
-                if ev2 == 'Create User':
-
-
-                if ev2 is None:
-                    break
-            else:
-                username = vals2[0]
-                password = vals2[1]
+            while loggedin is False:
 
                 if ev2 == 'Login':
+                    username = vals2[0]
+                    password = vals2[1]
                     check_loggedin = db.check_user(username, password)
 
                     if check_loggedin is True:
@@ -88,7 +76,22 @@ if __name__ == '__main__':
                         Sg.Popup("Something went wrong. Try again.")
                         loggedin = False
 
-        if not loggedWindow_active and loggedin is True and created is False:
+                if ev2 == 'Create User' and loggedin is False:
+                    created = db.check_username(vals2[0])
+
+                    if created is False:
+                        db.set_user(username=vals2[0], password=vals2[1])
+                        Sg.Popup("The user with the name " + vals2[0] + " has been created!")
+                        loggedin = True
+
+                    else:
+                        Sg.Popup("This user already exists!")
+                        ev2, vals2 = loginWindow.Read()
+
+                if ev2 is None:
+                    break
+
+        if not loggedWindow_active and loggedin is True:
             cases = db.get_cases()
             table = Sg.Table(cases,
                              headings=["case", "case id", "title", "description", "date created"],
@@ -169,18 +172,3 @@ if __name__ == '__main__':
                                [Sg.Checkbox('Hash Image after Indexing')],
                                [Sg.Button('Back'), Sg.Button('Save')]]
                     createCaseWindow2 = Sg.Window('Turtle Forensics - case ' + str(case[2]), icon='ICON.ico').Layout(layout5)
-
-def CreatUser(username, password):
-    check_created = db.check_exist(username)
-
-    if check_created == username:
-        created = True
-        Sg.Popup("This user already exists!")
-        ev2, vals2 = loginWindow.Read()
-
-    else:
-        db.set_user(values)
-        Sg.Popup("The user with the name " + username + " has been created!")
-        loggedin = True
-        created = False
-    break

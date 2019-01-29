@@ -1,11 +1,15 @@
-################
-# Sqlite Class #
-################
+#######################
+# Sqlite Class        #
+# Matthijs Zondervan  #
+# s1106533            #
+#######################
+
 class Sqlite:
 
     # import sqlite libary
     import sqlite3
     from datetime import date, datetime
+    import csv
 
     # make all class atributes
     path = ''
@@ -19,11 +23,17 @@ class Sqlite:
         self.conn = self.sqlite3.connect(self.path + '/' + self.filename+'.db')
         self.c = self.conn.cursor()
 
+    ##########################
+    # Main database functions
+    ##########################
+
+    # set up database function this runs the create query
     def setup_database(self):
         # make users table
         self.c.execute('CREATE TABLE IF NOT EXISTS users(user_id integer primary key AUTOINCREMENT, '
                        'user_name text, '
-                       'password text) ')
+                       'password text, '
+                       'created_at timestamp) ')
         # make case_assignments table
         self.c.execute('CREATE TABLE IF NOT EXISTS case_assignments(assiment_id integer primary key AUTOINCREMENT, '
                        'user_id integer NOT NULL, '
@@ -35,7 +45,7 @@ class Sqlite:
                        'case_number integer, '
                        'case_title varchar, '
                        'case_note varchar, '
-                       'case_created timestamp)')
+                       'created_at timestamp)')
         # make sessions table
         self.c.execute('CREATE TABLE IF NOT EXISTS sessions(session_id integer primary key AUTOINCREMENT, '
                        'user_id integer,'
@@ -44,24 +54,22 @@ class Sqlite:
                        'FOREIGN KEY (user_id) REFERENCES users(user_id)) ')
         # make logs table
         self.c.execute('CREATE TABLE IF NOT EXISTS logs(log_id integer primary key AUTOINCREMENT, '
-                       'evidence_id integer, '
-                       'session_id integer, '
-                       'case_id integer, '
-                       'log_type_id INTEGER,date_time text, '
-                       'title text, '
-                       'details text, '
+                       'evidence_id integer NULL, '
+                       'user_id integer NULL,'
+                       'session_id integer NULL, '
+                       'case_id integer NULL, '
+                       'date_time text, '
+                       'title text NULL, '
+                       'details text NULL, '
                        'FOREIGN KEY (evidence_id) REFERENCES evidences(evidence_id), '
+                       'FOREIGN KEY (user_id) REFERENCES users(user_id),'
                        'FOREIGN KEY (session_id) REFERENCES sessions(session_id), '
                        'FOREIGN KEY (evidence_id) REFERENCES evidences(evidence_id), '
-                       'FOREIGN KEY (log_type_id) REFERENCES log_type(log_type_id), '
                        'FOREIGN KEY (case_id) REFERENCES cases(case_id))')
-        # make log_types table
-        self.c.execute('CREATE TABLE IF NOT EXISTS log_types(log_type_id INTEGER primary key AUTOINCREMENT, '
-                       'name text, '
-                       'color text)')
         # make evidences table
         self.c.execute('CREATE TABLE IF NOT EXISTS evidences(evidence_id integer primary key AUTOINCREMENT, '
                        'case_id integer, '
+                       'case_number integer,'
                        'title text, '
                        'type integer,'
                        'FOREIGN KEY (case_id) REFERENCES cases(case_id))')
@@ -84,43 +92,59 @@ class Sqlite:
                        'file_id integer, '
                        'scan_report none,'
                        'FOREIGN KEY (file_id) REFERENCES files(file_id))')
-        # make processes table
-        self.c.execute('CREATE TABLE IF NOT EXISTS processes(proces_id integer primary key AUTOINCREMENT, '
-                       'evidence_id integer, '
-                       'name text, '
-                       'PID integer, '
-                       'PPID integer, '
-                       'thds integer, '
-                       'hnds integer, '
-                       'time integer, '
-                       'FOREIGN KEY (evidence_id) REFERENCES evidences(evidence_id))')
+        # make bookmark table
+        self.c.execute('CREATE TABLE IF NOT EXISTS bookmarks ('
+                       'bookmark_id integer PRIMARY KEY AUTOINCREMENT,'
+                       'file_id integer,'
+                       'tile text,'
+                       'description text,'
+                       'created_at datetime,'
+                       'FOREIGN KEY (file_id) REFERENCES files(file_id))')
         # commit all changes to the database
         self.conn.commit()
         # close connection to the database
 
-    # check the database if it hase the right tabels
+    # check the database if it has the right tabels
     def check_database(self):
         return
 
-    # make a new logitem in the database
-    def set_logitem(self, values):
-        self.c.executemany('INSERT INTO logs (evidence_id, session_id, case_id, date_time, title, details) VALUES (?, ?, ?, ?, ?, ? )', values["evidence_id"], values["session_id"], values["case_id"], values["date_time"] ,values["title"] ,values["details"])
-        return
+    #############################
+    # all log related functions
+    #############################
 
-    # get all the logitem details
-    def get_logitem_details(self, logId):
-        self.c.execute("SELECT * FROM logs WHERE logId = '%lodId'" % logId)
-        return self.c.fetchall()
+    # make a new log item in the database
+    def log_item(self, case_id='', user_id=None, evidence_id=None, session_id=None, title=None, details=None):
+        date_time = self.datetime.now()
+        self.c.execute('INSERT INTO logs(case_id, user_id, evidence_id, session_id, title, details, date_time) '
+                       'VALUES(?, ?, ? ,? ,?, ?, ?)',
+                       (case_id, user_id, evidence_id, session_id, title, details, date_time))
+        self.conn.commit()
+
+    # save all log items to a csv file
+    def log2csv(self):
+        data = self.get_log_items()
+        with open('output.csv', 'w') as f:
+            writer = self.csv.writer(f)
+            writer.writerow(['case_id', 'user_id', 'evidence_id', 'session_id', 'title', 'details', 'date_time'])
+            writer.writerows(data)
 
     # get all log logitems that meet the arguments
-    def get_logitems(self, args):
+    def get_log_items(self):
         self.c.execute("SELECT * FROM logs")
         return self.c.fetchall()
 
+    def get_log(self, log_id):
+        self.c.execute("SELECT * FROM logs WHERE log_id = ?", log_id)
+
+    #############################
+    # all case related functions
+    #############################
+
     # make a new case in the database
     def set_case(self, values):
-        self.c.execute('INSERT INTO cases(case_number, case_title, case_note, case_created) VALUES (?, ?, ?, ?)', (values['number'], values['title'], values['note'], self.datetime.now()))
+        self.c.execute('INSERT INTO cases(case_number, case_title, case_note, created_at) VALUES (?, ?, ?, ?)', (values['number'], values['title'], values['note'], self.datetime.now()))
         self.conn.commit()
+        self.log_item(case_id=values['number'], title="new cases created", details="case number:" + values['number'] + " title:" + values['title'] + " note: "+values['note']+"")
         return
 
     # get all the details from a case where the
@@ -133,9 +157,17 @@ class Sqlite:
         self.c.execute("SELECT * FROM cases")
         return self.c.fetchall()
 
+    ######################################
+    # all evidence item related functions
+    ######################################
+
     # make a new evidence item in the database
     def set_evidence_item(self, values):
-        self.c.executemany('INSERT INTO evidences (evidence_code, case_id, title, type) values(?, ?, ?, ?)', values["evidence_code"], values["case_id"], values["title"], values["type"])
+        self.c.executemany('INSERT INTO evidences (evicence_code, case_id, title, type) values(?, ?, ?, ?)',
+                           values["evidence_code"], values["case_id"], values["title"], values["type"])
+        self.conn.commit()
+        self.log_item(case_id=values['case_id'],  title="new evidence item created",
+                      details="code:"+values['evidence_code']+"")
         return
 
     # get al the details from a evidence item
@@ -148,6 +180,10 @@ class Sqlite:
         self.c.execute("SELECT * FROM evidences" )
         return self.c.fetchall()
 
+    #############################
+    # all file related functions
+    #############################
+
     # make a new file in the databse
     def set_files(self, values):
         self.c.executemany('INSERT INTO files (partition_id, file_md5, file_sha256, file_sha1, title, date_created, date_last_modified, file_path, size, extention, file_type) '
@@ -159,29 +195,29 @@ class Sqlite:
         self.execute('SELECT fields FROM files')
         return self.c.fetchall()
 
+    ##############################
+    # all user related functions
+    ##############################
+
     # make a new user in the databse
-    def set_user(self, values):
-        self.c.execute('INSERT INTO users(user_name, password) VALUES(?, ?)', (values))
+    def set_user(self, username, password):
+        date_time = self.datetime.now()
+        self.c.execute('INSERT INTO users(user_name, password, created_at) VALUES(?, ?, ?)', (username, password, date_time))
         self.conn.commit()
+        self.log_item(title="new user created", details="username:"+username+" password:"+password+"")
 
     # check if the user password is correct
     def check_user(self, username, password):
         self.c.execute("SELECT * FROM users WHERE users.user_name = '%s'" % username)
         result = self.c.fetchone()
+        print(result)
         if result is None:
-            print("geen asjdf")
             return False
         if result is not None:
-            print("meer dan 0")
-            if password == self.c.fetchone()[2]:
+            if password == result[2]:
                 return True
             else:
                 return False
-
-    def check_exist(self, username):
-        self.c.execute("SELECT user_name FROM users WHERE users.user_name = '%s'" % username)
-        result = self.c.fetchone()
-        return result[0]
 
     # update the password from a user only if the old password is correct
     def update_password(self, old_password, new_password, username):
@@ -198,5 +234,31 @@ class Sqlite:
         self.c.execute('SELECT user_name FROM users ')
         return self.c.fetchall()
 
+    # assing a user to a case
     def assing_user_to_case(self, user_id, case_id):
-        self.c.execute("INSERT INTO case_assinment")
+        self.c.execute("INSERT INTO case_assinment(user_id, case_id) VALUES(?, ?)", (user_id, case_id))
+        self.conn.commit()
+        self.log_item(title="new case assingment created",
+                      details="user" + user_id + " has granted access to " + case_id + "")
+
+    # check if user exists
+    def check_username(self, username):
+        self.c.execute("SELECT user_name FROM users WHERE user_name = '%s'" % username)
+        result = self.c.fetchone()
+        if result is None:
+            return False
+        if result is not None:
+            return True
+        else:
+            return False
+
+    #################################
+    # All bookmark related functions
+    #################################
+
+    def set_bookmark(self, file_id, title, description, created_at):
+        self.c.execute("INSERT INTO bookmarks(file_id, title, description, created_at) VALUES(?,?,?,?)", file_id, title, description, created_at)
+
+    def get_case_bookmarks(self, case_id):
+        self.c.execute("SELECT * FROM bookmarks WHERE case_id ='%s'" %case_id)
+        return self.c.executemany()
