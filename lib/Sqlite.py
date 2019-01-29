@@ -135,7 +135,7 @@ class Sqlite:
 
     # make a new evidence item in the database
     def set_evidence_item(self, values):
-        self.c.executemany('INSERT INTO evidences (evicence_code, case_id, title, type) values(?, ?, ?, ?)', values["evidence_code"], values["case_id"], values["title"], values["type"])
+        self.c.executemany('INSERT INTO evidences (evidence_code, case_id, title, type) values(?, ?, ?, ?)', values["evidence_code"], values["case_id"], values["title"], values["type"])
         return
 
     # get al the details from a evidence item
@@ -177,6 +177,11 @@ class Sqlite:
                 return True
             else:
                 return False
+
+    def check_exist(self, username):
+        self.c.execute("SELECT user_name FROM users WHERE users.user_name = '%s'" % username)
+        result = self.c.fetchone()
+        return result[0]
 
     # update the password from a user only if the old password is correct
     def update_password(self, old_password, new_password, username):
