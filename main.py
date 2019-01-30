@@ -3,6 +3,7 @@ if __name__ == '__main__':
     import PySimpleGUI as Sg
     from lib import Sqlite
     from lib import VirusTotal
+    import webbrowser
 
     path = os.path.dirname(os.path.realpath(__file__))
     print(path)
@@ -109,10 +110,16 @@ if __name__ == '__main__':
                     ev3, vals3 = loggedWindow.Read()
 
                     if ev3 == 'VirusTotal':
-                        VirusTotal
 
-                    if ev3 == 'clicked':
-                        Sg.Popup(vals3)
+                        vt = VirusTotal.VirusTotal('a0771fbe10241d2a6d00b13fa1449664845308d64daad53c48ad18bee3138130')
+                        testfile = "C:/Users/Oskar/Downloads/boarding-pass.pdf"
+
+                        print("Open de link voor het rapport:", vt.upload_file(testfile))
+                        hashresource = vt.upload_file(testfile)
+
+                        Sg.Popup("Open de link voor het rapport:", vt.upload_file(testfile),
+                                 button_color=('black', 'yellow'))
+                        webbrowser.open(vt.upload_file(testfile))
 
                     if ev3 == 'Open Case':
                         active_case = cases[vals3[0][0]][0]
@@ -160,8 +167,12 @@ if __name__ == '__main__':
                         if ev5 == 'Save':
                             if vals5['E01']:
                                 print('e01')
+
                             if vals5['RAW']:
                                 print('raw')
+
+                    if ev5 is None:
+                        break
 
                 # case overview
                 if not createCaseWindow2_active and ev3 == 'Open Case' and loggedin is True:

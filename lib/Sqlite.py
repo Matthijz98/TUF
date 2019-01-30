@@ -100,6 +100,7 @@ class Sqlite:
                        'description text,'
                        'created_at datetime,'
                        'FOREIGN KEY (file_id) REFERENCES files(file_id))')
+
         # commit all changes to the database
         self.conn.commit()
         # close connection to the database

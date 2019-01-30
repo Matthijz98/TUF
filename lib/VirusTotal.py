@@ -109,16 +109,3 @@ class VirusTotal:
         else:
             # if the hash is working just return that
             return response_hash
-
-
-if __name__ == '__main__':
-    vt = VirusTotal('api key')
-    testfile = "file path"
-
-
-    print("Open de link voor het rapport:", vt.upload_file(testfile))
-    hashresource = vt.upload_file(testfile)
-
-    Sg.Popup("Open de link voor het rapport:", vt.upload_file(testfile), button_color=('black', 'yellow'))
-    webbrowser.open(vt.upload_file(testfile))
-
