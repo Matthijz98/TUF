@@ -143,9 +143,11 @@ class Sqlite:
 
     # make a new case in the database
     def set_case(self, values):
-        self.c.execute('INSERT INTO cases(case_number, case_title, case_note, created_at) VALUES (?, ?, ?, ?)', (values['number'], values['title'], values['note'], self.datetime.now()))
+        self.c.execute('INSERT INTO cases(case_number, case_title, case_note, created_at) '
+                       'VALUES (?, ?, ?, ?)', (values['number'], values['title'], values['note'], self.datetime.now()))
         self.conn.commit()
-        self.log_item(case_id=values['number'], title="new cases created", details="case number:" + values['number'] + " title:" + values['title'] + " note: "+values['note']+"")
+        self.log_item(case_id=values['number'], title="new cases created",
+                      details="case number:" + values['number'] + " title:" + values['title'] + " note: " + values['note']+"")
         return
 
     # get all the details from a case where the
@@ -201,7 +203,8 @@ class Sqlite:
 
     # make a new file in the databse
     def set_files(self, values):
-        self.c.executemany('INSERT INTO files (partition_id, file_md5, file_sha256, file_sha1, title, date_created, date_last_modified, file_path, size, extention, file_type) '
+        self.c.executemany('INSERT INTO files (partition_id, file_md5, file_sha256, file_sha1, title, '
+                           'date_created, date_last_modified, file_path, size, extention, file_type) '
                            'VALUES (? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,?)', (values))
         self.conn.commit()
 
@@ -217,7 +220,8 @@ class Sqlite:
     # make a new user in the databse
     def set_user(self, username, password):
         date_time = self.datetime.now()
-        self.c.execute('INSERT INTO users(user_name, password, created_at) VALUES(?, ?, ?)', (username, password, date_time))
+        self.c.execute('INSERT INTO users(user_name, password, created_at) '
+                       'VALUES(?, ?, ?)', (username, password, date_time))
         self.conn.commit()
         self.log_item(title="new user created", details="username:"+username+" password:"+password+"")
 
@@ -230,6 +234,7 @@ class Sqlite:
             return False
         if result is not None:
             if password == result[2]:
+                self.log_item(user_id=result[0], title="gebruiker ingelogt", details="gebruikersnaam:" + username + "")
                 return True
             else:
                 return False
@@ -272,11 +277,15 @@ class Sqlite:
     #################################
 
     def set_bookmark(self, file_id, title, description, created_at):
-        self.c.execute("INSERT INTO bookmarks(file_id, title, description, created_at) VALUES(?,?,?,?)", file_id, title, description, created_at)
+        self.c.execute("INSERT INTO bookmarks(file_id, title, description, created_at) "
+                       "VALUES(?,?,?,?)", file_id, title, description, created_at)
+        self.log_item(file_id=file_id, title="new bookmark is created",
+                      details="bookmark for file_id:"+file_id+" description:"+description+"")
 
     def get_case_bookmarks(self, case_id):
         self.c.execute("SELECT * FROM bookmarks WHERE case_id ='%s'" %case_id)
         return self.c.executemany()
+
 if __name__ == '__main__':
     db = Sqlite(path='C:/Users/mzond/Desktop/DEV/TUF')
     db.setup_database()
