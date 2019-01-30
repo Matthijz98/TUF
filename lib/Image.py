@@ -60,8 +60,8 @@ class test():
         volume = pytsk3.Volume_Info(imagehandle)
         # test.printpartitiontable(imagehandle, volume)
         # test.listfiles(volume, imagehandle)
-        """
-        #for partition in volume:
+
+        for partition in volume:
             print(partition.addr, partition.desc.decode('utf-8'), "%ss(%s)" % (partition.start, partition.start * 512),
                 partition.len)
             try:
@@ -69,11 +69,11 @@ class test():
             except:
                 print("Partition has no supported file system")
                 continue
-             print("File System Type Dectected ", filesystemObject.info.ftype)
-        """
+            print("File System Type Dectected ", filesystemObject.info.ftype)
+
         for partition in volume:
             # Variabele return vanuit de GUI met gekozen partitie
-            if 'NTFS' in partition.desc.decode('utf-8'):
+            if 'FAT16' in partition.desc.decode('utf-8'):
                 partition_id = partition.addr
                 filesystemObject = pytsk3.FS_Info(imagehandle, offset=partition.start * 512)
 
@@ -81,7 +81,7 @@ class test():
                 if change_dir is None:
                     open_current_dir = filesystemObject.open_dir(path=current_dir)
                 else:
-                    current_dir += "/" + change_dir
+                    current_dir = current_dir + change_dir
                     open_current_dir = filesystemObject.open_dir(path=current_dir)
 
                 # Only for test purpose
@@ -101,18 +101,18 @@ class test():
                                 extension = name.rsplit(".")[-1].lower()
 
                     size = f.info.meta.size
-                    filepath = current_dir + f.info.name.name.decode('utf-8')
+                    filepath = pjoin(current_dir, "/", f.info.name.name.decode('utf-8'))
                     create = datetime.datetime.fromtimestamp(f.info.meta.crtime).strftime('%Y-%m-%d %H:%M:%S')
                     modify = datetime.datetime.fromtimestamp(f.info.meta.mtime).strftime('%Y-%m-%d %H:%M:%S')
 
-                    if f_type == "FILE":
-                        # fileobject = filesystemObject.open(filepath)
-                        completeName = pjoin(filepath)
-                        outfile = open(pjoin('C:/Users/Gido Scherpenhuizen/Documents/,School/OUTPUT/' + completeName), 'wb')
-                        outfile.close()
-                        # filedata = fileobject.read_random(0, fileobject.info.meta.size)
-                        # outfile.write(filedata)
-
+                    #if f_type == "FILE":
+                    print(pjoin("/", filepath))
+                      #  fileobject = filesystemObject.open(pjoin(filepath))
+                       # # completeName = pjoin(filepath)
+                        #outfile = open(pjoin('C:/Users/Gido Scherpenhuizen/Documents/,School/OUTPUT/' + f.info.name.name.decode('utf-8')), 'wb')
+                        #filedata = fileobject.read_random(0, fileobject.info.meta.size)
+                        #outfile.write(filedata)
+                        #outfile.close()
                         # f_size = getattr(f.info.meta, "size", 0)
                         # md5_hash = hashlib.md5()  # MD5 FUNCTIE VAN DYLAN
                         # md5_hash.update(filedata)
