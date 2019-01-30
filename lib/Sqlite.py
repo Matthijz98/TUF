@@ -156,7 +156,12 @@ class Sqlite:
     # get all cases that meet the arguments
     def get_cases(self):
         self.c.execute("SELECT * FROM cases")
-        return self.c.fetchall()
+        result = self.c.fetchall()
+        print(result)
+        if len(result) == 0:
+            return [(None, None, None, None, None)]
+        else:
+            return result
 
     ######################################
     # all evidence item related functions
@@ -184,6 +189,15 @@ class Sqlite:
     #############################
     # all file related functions
     #############################
+
+    # search for files
+    def search_file(self, search):
+        self.c.execute('SELECT * FROM files WHERE title LIKE ?', ('%' + search + '%',))
+        result = self.c.fetchall()
+        if len(result) == 0:
+            return [(None, None, None, None, None, None, None, None, None, None, None, None)]
+        else:
+            return result
 
     # make a new file in the databse
     def set_files(self, values):
@@ -263,3 +277,7 @@ class Sqlite:
     def get_case_bookmarks(self, case_id):
         self.c.execute("SELECT * FROM bookmarks WHERE case_id ='%s'" %case_id)
         return self.c.executemany()
+if __name__ == '__main__':
+    db = Sqlite(path='C:/Users/mzond/Desktop/DEV/TUF')
+    db.setup_database()
+    print(db.search_file('bom'))
