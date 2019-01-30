@@ -58,7 +58,7 @@ class VirusTotal:
         return response
 
     def get_report(self, resource):
-        #time.sleep(1)
+        # time.sleep(1)
         params = {'apikey': self.api, 'resource': resource}
         headers = {
             "Accept-Encoding": "gzip, deflate",
@@ -91,7 +91,7 @@ class VirusTotal:
                           open(filename, 'rb'))}
 
         response = requests.post('https://www.virustotal.com/vtapi/v2/file/scan', files=files, params=params)
-        #print(response)
+        # print(response)
         json_response = response.json()
         return json_response['permalink']
 

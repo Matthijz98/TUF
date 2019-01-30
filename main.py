@@ -2,6 +2,7 @@ if __name__ == '__main__':
     import os
     import PySimpleGUI as Sg
     from lib import Sqlite
+    from lib import VirusTotal
 
     path = os.path.dirname(os.path.realpath(__file__))
     print(path)
@@ -10,7 +11,6 @@ if __name__ == '__main__':
     loggedin = False
     # the currently open case
     active_case = ''
-
 
     def makeCase(number, title, note):
         values = {"number": number, "title": title, "note": note}
@@ -100,16 +100,20 @@ if __name__ == '__main__':
                        [Sg.Text('', key='OUTPUT')],
                        [Sg.Text('Would you like to create a new case or open a recent one?')],
                        [table],
-                       [Sg.Button('Open Case'), Sg.Button('Create Case')]]
+                       [Sg.Button('Open Case'), Sg.Button('Create Case'), Sg.Button('VirusTotal'),
+                        Sg.Button('Logging')]]
             loggedWindow = Sg.Window('TUF - Turtle Forensics', icon='ICON.ico').Layout(layout3)
 
             while True:
                 if loggedWindow_active:
                     ev3, vals3 = loggedWindow.Read()
 
-                    if ev3 == 'clicked':
+                    if ev3 == 'VirusTotal':
+                        VirusTotal
 
+                    if ev3 == 'clicked':
                         Sg.Popup(vals3)
+
                     if ev3 == 'Open Case':
                         active_case = cases[vals3[0][0]][0]
                         break
