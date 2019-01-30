@@ -283,8 +283,9 @@ class Sqlite:
                       details="bookmark for file_id:"+file_id+" description:"+description+"")
 
     def get_case_bookmarks(self, case_id):
-        self.c.execute("SELECT * FROM bookmarks WHERE case_id ='%s'" %case_id)
+        self.c.execute("SELECT * FROM bookmarks WHERE case_id ='%s'" % case_id)
         return self.c.executemany()
+
 
 if __name__ == '__main__':
     db = Sqlite(path='C:/Users/mzond/Desktop/DEV/TUF')

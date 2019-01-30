@@ -1,3 +1,8 @@
+#######################
+# Main/GUI            #
+# Oskar Brynkus       #
+# s1105798            #
+#######################
 if __name__ == '__main__':
     import os
     import PySimpleGUI as Sg
@@ -112,13 +117,13 @@ if __name__ == '__main__':
                     if ev3 == 'VirusTotal':
 
                         vt = VirusTotal.VirusTotal('a0771fbe10241d2a6d00b13fa1449664845308d64daad53c48ad18bee3138130')
-                        testfile = "C:/Users/Oskar/Downloads/boarding-pass.pdf"
+
+                        testfile = Sg.PopupGetFile('Which file would you like to check?', 'TUF - VirusTotal')
 
                         print("Open de link voor het rapport:", vt.upload_file(testfile))
                         hashresource = vt.upload_file(testfile)
 
-                        Sg.Popup("Open de link voor het rapport:", vt.upload_file(testfile),
-                                 button_color=('black', 'yellow'))
+                        Sg.Popup("Open de link voor het rapport:", vt.upload_file(testfile))
                         webbrowser.open(vt.upload_file(testfile))
 
                     if ev3 == 'Open Case':
