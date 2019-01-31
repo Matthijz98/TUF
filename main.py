@@ -130,6 +130,11 @@ if __name__ == '__main__':
                         active_case = cases[vals3[0][0]][0]
                         break
 
+                    table1 = Sg.Table('hello')
+                    if ev3 == 'Logging':
+                        Sg.Popup("You clicked on Row", table1)
+                        break
+
                     if ev3 is None:
                         break
 
@@ -164,7 +169,8 @@ if __name__ == '__main__':
                                        [Sg.Text('Image source:    '), Sg.Input(), Sg.FolderBrowse()],
                                        [Sg.Checkbox('Hash Image after Indexing')],
                                        [Sg.Button('Back'), Sg.Button('Save')]]
-                            createCaseWindow2 = Sg.Window('Turtle Forensics - Create Case', icon='ICON.ico').Layout(layout5)
+                            createCaseWindow2 = Sg.Window('Turtle Forensics - Create Case', icon='ICON.ico')\
+                                .Layout(layout5)
 
                     if createCaseWindow2_active:
                         ev5, vals5 = createCaseWindow2.Read()
@@ -188,4 +194,5 @@ if __name__ == '__main__':
                                [Sg.Text('Image source:    '), Sg.Input(), Sg.FolderBrowse()],
                                [Sg.Checkbox('Hash Image after Indexing')],
                                [Sg.Button('Back'), Sg.Button('Save')]]
-                    createCaseWindow2 = Sg.Window('Turtle Forensics - case ' + str(case[2]), icon='ICON.ico').Layout(layout5)
+                    createCaseWindow2 = Sg.Window('Turtle Forensics - case ' + str(case[2]), icon='ICON.ico')\
+                        .Layout(layout5)
