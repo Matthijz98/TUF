@@ -76,6 +76,7 @@ class Sqlite:
         # make files table
         self.c.execute('CREATE TABLE IF NOT EXISTS files ('
                        'file_id integer PRIMARY KEY AUTOINCREMENT,'
+                       'file_parrent text,'
                        'partition_id blob,'
                        'file_md5 text,'
                        'file_sha256 text,'
@@ -86,7 +87,8 @@ class Sqlite:
                        'file_path varchar,'
                        'size integer,'
                        'extention varchar,'
-                       'file_type integer)')
+                       'file_type integer,'
+                       'FOREIGN KEY (file_parrent) REFERENCES files(file_id))')
         # make virustotal_reports
         self.c.execute('CREATE TABLE IF NOT EXISTS virustotal_reports(scan_id integer primary key AUTOINCREMENT, '
                        'file_id integer, '
@@ -100,7 +102,6 @@ class Sqlite:
                        'description text,'
                        'created_at datetime,'
                        'FOREIGN KEY (file_id) REFERENCES files(file_id))')
-
         # commit all changes to the database
         self.conn.commit()
         # close connection to the database
@@ -143,11 +144,9 @@ class Sqlite:
 
     # make a new case in the database
     def set_case(self, values):
-        self.c.execute('INSERT INTO cases(case_number, case_title, case_note, created_at) '
-                       'VALUES (?, ?, ?, ?)', (values['number'], values['title'], values['note'], self.datetime.now()))
+        self.c.execute('INSERT INTO cases(case_number, case_title, case_note, created_at) VALUES (?, ?, ?, ?)', (values['number'], values['title'], values['note'], self.datetime.now()))
         self.conn.commit()
-        self.log_item(case_id=values['number'], title="new cases created",
-                      details="case number:" + values['number'] + " title:" + values['title'] + " note: " + values['note']+"")
+        self.log_item(case_id=values['number'], title="new cases created", details="case number:" + values['number'] + " title:" + values['title'] + " note: "+values['note']+"")
         return
 
     # get all the details from a case where the
@@ -158,12 +157,7 @@ class Sqlite:
     # get all cases that meet the arguments
     def get_cases(self):
         self.c.execute("SELECT * FROM cases")
-        result = self.c.fetchall()
-        print(result)
-        if len(result) == 0:
-            return [(None, None, None, None, None)]
-        else:
-            return result
+        return self.c.fetchall()
 
     ######################################
     # all evidence item related functions
@@ -192,26 +186,25 @@ class Sqlite:
     # all file related functions
     #############################
 
-    # search for files
-    def search_file(self, search):
-        self.c.execute('SELECT * FROM files WHERE title LIKE ?', ('%' + search + '%',))
-        result = self.c.fetchall()
-        if len(result) == 0:
-            return [(None, None, None, None, None, None, None, None, None, None, None, None)]
-        else:
-            return result
-
     # make a new file in the databse
     def set_files(self, values):
-        self.c.executemany('INSERT INTO files (partition_id, file_md5, file_sha256, file_sha1, title, '
-                           'date_created, date_last_modified, file_path, size, extention, file_type) '
+        self.c.executemany('INSERT INTO files (partition_id, file_md5, file_sha256, file_sha1, title, date_created, date_last_modified, file_path, size, extention, file_type) '
                            'VALUES (? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,?)', (values))
+        self.conn.commit()
+
+    def set_file(self, partition_id = None, file_parrent = None, file_md5 = None, file_sha256 = None, file_sha1 = None, title = None, date_created = None, date_last_modified = None, file_path = None, size = None, extention = None, file_type = None):
+        self.c.execute('INSERT INTO files (partition_id, file_parrent, file_md5, file_sha256, file_sha1, title, date_created, date_last_modified, file_path, size, extention, file_type) '
+                           'VALUES (? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,?, ?)', (partition_id, file_parrent, file_md5, file_sha256, file_sha1, title, date_created, date_last_modified, file_path, size, extention, file_type))
         self.conn.commit()
 
     # get all files that meet the arguments
     def get_files(self):
-        self.execute('SELECT fields FROM files')
+        self.c.execute('SELECT * FROM files')
         return self.c.fetchall()
+
+    def get_parent_key(self, name):
+        self.c.execute("SELECT file_id FROM files WHERE files.title == '%s'" % name)
+        return self.c.fetchone()
 
     ##############################
     # all user related functions
@@ -220,8 +213,7 @@ class Sqlite:
     # make a new user in the databse
     def set_user(self, username, password):
         date_time = self.datetime.now()
-        self.c.execute('INSERT INTO users(user_name, password, created_at) '
-                       'VALUES(?, ?, ?)', (username, password, date_time))
+        self.c.execute('INSERT INTO users(user_name, password, created_at) VALUES(?, ?, ?)', (username, password, date_time))
         self.conn.commit()
         self.log_item(title="new user created", details="username:"+username+" password:"+password+"")
 
@@ -234,7 +226,6 @@ class Sqlite:
             return False
         if result is not None:
             if password == result[2]:
-                self.log_item(user_id=result[0], title="gebruiker ingelogt", details="gebruikersnaam:" + username + "")
                 return True
             else:
                 return False
@@ -277,17 +268,8 @@ class Sqlite:
     #################################
 
     def set_bookmark(self, file_id, title, description, created_at):
-        self.c.execute("INSERT INTO bookmarks(file_id, title, description, created_at) "
-                       "VALUES(?,?,?,?)", file_id, title, description, created_at)
-        self.log_item(file_id=file_id, title="new bookmark is created",
-                      details="bookmark for file_id:"+file_id+" description:"+description+"")
+        self.c.execute("INSERT INTO bookmarks(file_id, title, description, created_at) VALUES(?,?,?,?)", file_id, title, description, created_at)
 
     def get_case_bookmarks(self, case_id):
-        self.c.execute("SELECT * FROM bookmarks WHERE case_id ='%s'" % case_id)
+        self.c.execute("SELECT * FROM bookmarks WHERE case_id ='%s'" %case_id)
         return self.c.executemany()
-
-
-if __name__ == '__main__':
-    db = Sqlite(path='C:/Users/mzond/Desktop/DEV/TUF')
-    db.setup_database()
-    print(db.search_file('bom'))
