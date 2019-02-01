@@ -81,7 +81,6 @@ for f in database:
             tree.Insert(f[1], f[0], f[6], list, icon=file_icon)
         else:
             p_key = db.get_parent_key(f[1])
-            print(p_key)
             tree.Insert(p_key[0], f[0], f[6], list, icon=file_icon)
 
 
