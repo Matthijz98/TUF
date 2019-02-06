@@ -23,6 +23,7 @@ loggedin = False
 # the currently open case
 active_case = ''
 
+
 # a method that makes a case
 def makeCase(number, title, note):
     values = {"number": number, "title": title, "note": note}
@@ -127,7 +128,7 @@ while True:
 
         while True:
             if loggedWindow_active:
-                ev3, vals3 = loggedWindow.Read()
+                ev3, vals3 = loggedWindow.Show()
 # if the user pressed the button virustotal then it will execute the code beneath it
                 if ev3 == 'VirusTotal':
                     # the virustotal api

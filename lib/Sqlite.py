@@ -157,7 +157,12 @@ class Sqlite:
     # get all cases that meet the arguments
     def get_cases(self):
         self.c.execute("SELECT * FROM cases")
-        return self.c.fetchall()
+        result = self.c.fetchall()
+        print(result)
+        if len(result) == 0:
+            return [(None, None, None, None, None)]
+        else:
+            return result
 
     ######################################
     # all evidence item related functions
