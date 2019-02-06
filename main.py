@@ -67,10 +67,10 @@ while True:
         # Giving the window the variable layout
         loginWindow = Sg.Window('TUF - Turtle Forensics', size=(400, 300), icon='ICON.ico').Layout(layout2)
 
-# if loginWindow is active then the code underneath will run
+    # if loginWindow is active then the code underneath will run
     if loginWindow_active:
         ev2, vals2 = loginWindow.Read()
-# while the user hasn't logged in then the program will keep showing the same window
+        # while the user hasn't logged in then the program will keep showing the same window
         while loggedin is False:
 
             if ev2 == 'Login':
@@ -92,8 +92,8 @@ while True:
                 else:
                     Sg.Popup("Something went wrong. Try again.")
                     loggedin = False
-# if the user tries to create a new account with a username that already exists it will show a popup screen and keep
-# repeating the same window until he creates a new user or logs in
+            # if the user tries to create a new account with a username that already exists it will show a popup screen and keep
+            # repeating the same window until he creates a new user or logs in
             if ev2 == 'Create User' and loggedin is False:
                 created = db.check_username(vals2[0])
 #
@@ -108,14 +108,14 @@ while True:
 
             if ev2 is None:
                 break
-# if loggedWindow and loggedin is True then the code underneath will run
+    # if loggedWindow and loggedin is True then the code underneath will run
     if not loggedWindow_active and loggedin is True:
         cases = db.get_cases()
         table = Sg.Table(cases,
                          headings=["case", "case id", "title", "description", "date created"],
                          enable_events=True)
         loggedWindow_active = True
-# hides the window loginWindow
+        # hides the window loginWindow
         loginWindow.Hide()
         # The layout of the window is created with the 'layout' variable
         layout3 = [[Sg.T(' ' * 20), Sg.Text('Welcome to Turtle Forensics!')],
@@ -129,18 +129,18 @@ while True:
         while True:
             if loggedWindow_active:
                 ev3, vals3 = loggedWindow.Show()
-# if the user pressed the button virustotal then it will execute the code beneath it
+                # if the user pressed the button virustotal then it will execute the code beneath it
                 if ev3 == 'VirusTotal':
                     # the virustotal api
                     vt = VirusTotal.VirusTotal('a0771fbe10241d2a6d00b13fa1449664845308d64daad53c48ad18bee3138130')
-# the chosen file will get send to virustotal
+                    # the chosen file will get send to virustotal
                     testfile = Sg.PopupGetFile('Which file would you like to check?', 'TUF - VirusTotal')
 
                     print("Open de link voor het rapport:", vt.upload_file(testfile))
                     hashresource = vt.upload_file(testfile)
-# the user gets a popup screen which takes him to the virustotal website
+                    # the user gets a popup screen which takes him to the virustotal website
                     Sg.Popup("Open de link voor het rapport:", vt.upload_file(testfile))
-# opens the browser
+                    # opens the browser
                     webbrowser.open(vt.upload_file(testfile))
 
                 if ev3 == 'Open Case':
