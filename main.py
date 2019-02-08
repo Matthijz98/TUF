@@ -211,6 +211,48 @@ while True:
                            [Sg.Text('Image source:    '), Sg.Input(), Sg.FolderBrowse()],
                            [Sg.Checkbox('Hash Image after Indexing')],
                            [Sg.Button('Back'), Sg.Button('Save')]]
-                # Giving the window the variable layout
-                createCaseWindow2 = Sg.Window('Turtle Forensics - case ' + str(case[2]), icon='ICON.ico')\
-                    .Layout(layout5)
+                win6 = Sg.Window('Turtle Forensics - Create Case', icon='ICON.ico').Layout(layout6)
+
+            if win6_active:
+                ev6, vals6 = win6.Read()
+
+                if ev6 == 'Save':
+                    if vals6['e01']:
+                        print('Hello mijn nama mama')
+                    if vals6['RAW']:
+                        print('raw')
+
+"""           if ev2 in (None, 'Back', '< Prev'):
+                win2_active = False
+                win2.Close()
+                win1.UnHide()
+            elif ev3 == 'Next':
+                win4_active = True
+                win3_active = False
+                win3.Hide()
+                layout4 = [[Sg.Radio('E01', "Image"), Sg.Radio('RAW', "Image")],
+                           [Sg.Text('Image source:    '), Sg.Input(), Sg.FolderBrowse()],
+                           [Sg.Checkbox('Hash Image after Indexing')],
+                           [Sg.Button('Back'), Sg.Button('Save')]]
+                win3 = Sg.Window('Create Case').Layout(layout3)
+
+        if win3_active:
+            ev3, vals3 = win3.Read()
+            if ev3 in (None, 'Back', '< Prev'):
+                win3.Close()
+                win3_active = False
+                win2_active = True
+                win2.UnHide()
+            elif ev3 == 'Save':
+                win4_active = True
+                win3_active = False
+                win3.Hide()
+                layout4 = [[Sg.Radio('E01', "Image"), Sg.Radio('RAW', "Image")],
+                           [Sg.Text('Image source:    '), Sg.Input(), Sg.FolderBrowse()],
+                           [Sg.Checkbox('Hash Image after Indexing')],
+                           [Sg.Button('Back'), Sg.Button('Save')]]
+                win4 = Sg.Window('Create Case').Layout(layout4)
+
+                if win4_active:
+                    ev4, vals4 = win4.Read()
+"""
