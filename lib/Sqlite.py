@@ -10,10 +10,12 @@ class Sqlite:
     import sqlite3
     from datetime import date, datetime
     import csv
+    import hashlib
 
     # make all class atributes
     path = ''
     filename = ''
+    salt = 'D&2WxXKqs2f0ZHY1*2#kQV37$8jG8hSxCk@QPwJ1YmdM!5aCAlF1sJqUopg2kf39'
 
     # the constructor function to set all the atributes
     def __init__(self, path='', filename='database'):
@@ -76,7 +78,7 @@ class Sqlite:
         # make files table
         self.c.execute('CREATE TABLE IF NOT EXISTS files ('
                        'file_id integer PRIMARY KEY AUTOINCREMENT,'
-                       'file_parrent integer,'
+                       'file_parrent text,'
                        'partition_id blob,'
                        'file_md5 text,'
                        'file_sha256 text,'
@@ -157,7 +159,11 @@ class Sqlite:
     # get all cases that meet the arguments
     def get_cases(self):
         self.c.execute("SELECT * FROM cases")
-        return self.c.fetchall()
+        result = self.c.fetchall()
+        if len(result) == 0:
+            return [(None, None, None, None, None)]
+        else:
+            return result
 
     ######################################
     # all evidence item related functions
@@ -195,20 +201,26 @@ class Sqlite:
     def set_file(self, partition_id = None, file_parrent = None, file_md5 = None, file_sha256 = None, file_sha1 = None, title = None, date_created = None, date_last_modified = None, file_path = None, size = None, extention = None, file_type = None):
         self.c.execute('INSERT INTO files (partition_id, file_parrent, file_md5, file_sha256, file_sha1, title, date_created, date_last_modified, file_path, size, extention, file_type) '
                            'VALUES (? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,?, ?)', (partition_id, file_parrent, file_md5, file_sha256, file_sha1, title, date_created, date_last_modified, file_path, size, extention, file_type))
+        self.conn.commit()
 
     # get all files that meet the arguments
     def get_files(self):
-        self.execute('SELECT fields FROM files')
+        self.c.execute('SELECT * FROM files')
         return self.c.fetchall()
+
+    def get_parent_key(self, name):
+        self.c.execute("SELECT file_id FROM files WHERE files.title == '%s'" % name)
+        return self.c.fetchone()
 
     ##############################
     # all user related functions
     ##############################
 
-    # make a new user in the databse
+    # make a new usser in the databse
     def set_user(self, username, password):
         date_time = self.datetime.now()
-        self.c.execute('INSERT INTO users(user_name, password, created_at) VALUES(?, ?, ?)', (username, password, date_time))
+        hash_password = self.hashlib.sha1(self.salt.encode('utf-8') + password.encode('utf-8')).hexdigest()
+        self.c.execute('INSERT INTO users(user_name, password, created_at) VALUES(?, ?, ?)', (username, hash_password, date_time))
         self.conn.commit()
         self.log_item(title="new user created", details="username:"+username+" password:"+password+"")
 
@@ -216,11 +228,11 @@ class Sqlite:
     def check_user(self, username, password):
         self.c.execute("SELECT * FROM users WHERE users.user_name = '%s'" % username)
         result = self.c.fetchone()
-        print(result)
+
         if result is None:
             return False
         if result is not None:
-            if password == result[2]:
+            if self.hashlib.sha1(self.salt.encode('utf-8') + password.encode('utf-8')).hexdigest() == result[2]:
                 return True
             else:
                 return False
