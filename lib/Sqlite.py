@@ -10,10 +10,12 @@ class Sqlite:
     import sqlite3
     from datetime import date, datetime
     import csv
+    import hashlib
 
     # make all class atributes
     path = ''
     filename = ''
+    salt = 'D&2WxXKqs2f0ZHY1*2#kQV37$8jG8hSxCk@QPwJ1YmdM!5aCAlF1sJqUopg2kf39'
 
     # the constructor function to set all the atributes
     def __init__(self, path='', filename='database'):
@@ -157,7 +159,11 @@ class Sqlite:
     # get all cases that meet the arguments
     def get_cases(self):
         self.c.execute("SELECT * FROM cases")
-        return self.c.fetchall()
+        result = self.c.fetchall()
+        if len(result) == 0:
+            return [(None, None, None, None, None)]
+        else:
+            return result
 
     ######################################
     # all evidence item related functions
@@ -210,10 +216,11 @@ class Sqlite:
     # all user related functions
     ##############################
 
-    # make a new user in the databse
+    # make a new usser in the databse
     def set_user(self, username, password):
         date_time = self.datetime.now()
-        self.c.execute('INSERT INTO users(user_name, password, created_at) VALUES(?, ?, ?)', (username, password, date_time))
+        hash_password = self.hashlib.sha1(self.salt.encode('utf-8') + password.encode('utf-8')).hexdigest()
+        self.c.execute('INSERT INTO users(user_name, password, created_at) VALUES(?, ?, ?)', (username, hash_password, date_time))
         self.conn.commit()
         self.log_item(title="new user created", details="username:"+username+" password:"+password+"")
 
@@ -221,11 +228,11 @@ class Sqlite:
     def check_user(self, username, password):
         self.c.execute("SELECT * FROM users WHERE users.user_name = '%s'" % username)
         result = self.c.fetchone()
-        print(result)
+
         if result is None:
             return False
         if result is not None:
-            if password == result[2]:
+            if self.hashlib.sha1(self.salt.encode('utf-8') + password.encode('utf-8')).hexdigest() == result[2]:
                 return True
             else:
                 return False
