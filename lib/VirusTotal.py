@@ -1,6 +1,6 @@
 """
 Gemaakt door:
-Studentnummer:
+Studentnummer: 
 """
 
 # De publicApi importeren van virustotal
@@ -11,29 +11,30 @@ import json
 import hashlib
 # requests importeren voor het versturen van het bestand
 import requests
-# importeren timer
-import time
 
+# imports voor de GUI
 import PySimpleGUI as Sg
-import webbrowser
 
 
-# klasse VirusTotal aanmaken voor
+# klasse VirusTotal aanmaken
 class VirusTotal:
     # Hier wordt de key meegegeven
-    api = 'api key'
+    api = 'api_key meegeven'
 
     # Hier wordt de key aangeroepen
+    # Met self zijn attributen en methoden toegankelijk in de klasse
+    # init is de constructor. Als er een object wordt aangemaakt van de klasse
+    # wordt dit aangeroepen voor het initialiseren van de attributen
     def __init__(self, api):
         self.api = api
 
     # Hiermee wordt een hashwaarde van het bestand berekent
-    def hashFile(self, filename):
+    def hash_file(self, filename):
 
         # buffer size instellen zodat grotere bestanden sneller worden gelezen
         buffer_size = 65536
-        # sha1 hash ophalen uit de library
-        hash = hashlib.sha1()
+        # sha256 hash ophalen uit de library
+        hash = hashlib.sha256()
 
         try:
             # bestand openen
@@ -41,84 +42,93 @@ class VirusTotal:
                 while True:
                     # bestand wordt gelezen met de meegegeven buffer_size
                     buffer = file.read(buffer_size)
+                    # als de buffer leeg is dan stopt de while loop
                     if not buffer:
                         break
                     hash.update(buffer)
             # hash waarde wordt terugeggeven
             return hash.hexdigest()
+        # een foutmelding terugggeven als er iets fout gaat met het openen of als het bestand niet bestaat
         except IOError:
             print("Er gaat iets fout met het lezen van het bestand.")
 
-    # Met deze functie wordt de hashwaarde verstuurd naar VirusTotal
+    # Met deze functie wordt de hashwaarde verstuurt naar VirusTotal
     def send_hash(self, hashing):
         # De PublicApi wordt doorgegeven aan api
         api = PublicApi(self.api)
 
+        # response terugvragen van virustotal
         response = api.get_file_report(hashing)
         return response
 
+    # hier wordt het rapport opgehaald als er een bestand wordt geüpload
     def get_report(self, resource):
-        #time.sleep(1)
+
+        # api key en hash meegeven
         params = {'apikey': self.api, 'resource': resource}
-        headers = {
-            "Accept-Encoding": "gzip, deflate",
-            "User-Agent": "gzip,  My Python requests library example client or username"
-        }
+
         response = requests.get('https://www.virustotal.com/vtapi/v2/file/report',
-                                params=params, headers=headers)
+                                params=params)
         json_response = response.json()
 
         return json_response
 
-    """"
-    # Hier wordt het rapport opgevraagd van VirusTotal
-    def print_report(self, response):
-        # string genereren
-        dump = json.dumps(response)
-        # object maken
-        result = json.loads(dump)
-
-        # De json wordt netjes onder elkaar geprint
-        print(json.dumps(result, indent=4, sort_keys=True))
-
-        # Results van VirusTotal wordt doorgegeven aan results
-        results = result['results']
-    """
-
+    # hier wordt het bestand geupload naar virustotal
     def upload_file(self, filename):
+        # api key meegeven
         params = {'apikey': self.api}
-        files = {'file': ('',
+
+        # bestandslocatie meegeven
+        files = {'file': (filename,
                           open(filename, 'rb'))}
 
         response = requests.post('https://www.virustotal.com/vtapi/v2/file/scan', files=files, params=params)
-        #print(response)
+
         json_response = response.json()
+        # de permalink wordt geprint, hiermee kan het rapport worden geopend
         return json_response['permalink']
 
+    # hier wordt het bestand daadwerkelijk geupload als de hash niet wordt herkend
     def test_file(self, filename):
-        # hash to file
-        filehash = self.hashFile(filename)
-        # get the reponse of the hash upload
+        # hash toekennen aan filehash
+        filehash = self.hash_file(filename)
+        # verkrijgen van response van de hash upload
         response_hash = self.send_hash(filehash)
-        # print("response: ", response_hash)
-        # check if the result reponse code is 0
+
+        # kijken of de hashwaarde wordt herkend door VirusTotal
         if response_hash['results']['response_code'] == 0:
-            # if reponse is 0 upload the hole file and return the response
-            x = self.upload_file(testfile)
-            return self.get_report(x['resource'])
+
+            # als de response code 0 is, dan wordt het hele bestand geupload
+            Sg.Popup(f"{response_hash['results']['verbose_msg']}.\n\nHet bestand wordt nu geüpload.",
+                     button_color=('black', 'yellow'))
+
+            file_upload = self.upload_file(testfile)
+            return self.get_report(file_upload)
+
+        # als de gebruiker nog een keer het bestand upload,
+        # wordt er een melding teruggegeven dat het bestand in de wachtrij staat
+        if response_hash['results']['response_code'] == -2:
+
+            Sg.Popup(f"VirusTotal geeft het volgende terug: {response_hash['results']['verbose_msg']}",
+                     button_color=('black', 'yellow'))
+
         else:
-            # if the hash is working just return that
+
+            # als de hash wel werkt of als het bestand succesvol is gescand wordt dit terugegeven
+            Sg.Popup(f"Aantal positives: {response_hash['results']['positives']}", button_color=('black', 'yellow'))
+
             return response_hash
 
 
+# main uitvoeren
 if __name__ == '__main__':
-    vt = VirusTotal('api key')
-    testfile = "file path"
+    # api key meegeven
+    # klasse aanmaken van VirusTotal
+    vt = VirusTotal('api_key meegeven')
 
+    # bestand selecteren
+    testfile = "test_bestand invoeren"
 
-    print("Open de link voor het rapport:", vt.upload_file(testfile))
-    hashresource = vt.upload_file(testfile)
-
-    Sg.Popup("Open de link voor het rapport:", vt.upload_file(testfile), button_color=('black', 'yellow'))
-    webbrowser.open(vt.upload_file(testfile))
-
+    # functie test_file uitvoeren
+    # hier wordt de functie aangeroepen uit de klasse met de constructor
+    virustotal = vt.test_file(testfile)
