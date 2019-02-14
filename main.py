@@ -38,7 +38,7 @@ layout = [[Sg.Text('At which location would you like to save the TUF database?')
 startWindow = Sg.Window('TUF - Turtle Forensics', icon='ICON.ico').Layout(layout)
 
 # When all windows are false then startWindow is active
-createCaseWindow2_active = createCaseWindow_active = win4_active = loggedWindow_active = loginWindow_active = False
+loggingWindow_active = createCaseWindow2_active = createCaseWindow_active = win4_active = loggedWindow_active = loginWindow_active = False
 
 # When event and values are startWindow then they show that window.
 while True:
@@ -96,7 +96,7 @@ while True:
             # repeating the same window until he creates a new user or logs in
             if ev2 == 'Create User' and loggedin is False:
                 created = db.check_username(vals2[0])
-#
+
                 if created is False:
                     db.set_user(username=vals2[0], password=vals2[1])
                     Sg.Popup("The user with the name " + vals2[0] + " has been created!")
@@ -122,26 +122,21 @@ while True:
                    [Sg.Text('', key='OUTPUT')],
                    [Sg.Text('Would you like to create a new case or open a recent one?')],
                    [table],
-                   [Sg.Button('Open Case'), Sg.Button('Create Case'), Sg.Button('VirusTotal')]]
+                   [Sg.Button('Open Case'), Sg.Button('Create Case'), Sg.Button('VirusTotal'), Sg.Button('Logging')]]
         # Giving the window the variable layout
         loggedWindow = Sg.Window('TUF - Turtle Forensics', icon='ICON.ico').Layout(layout3)
 
         while True:
             if loggedWindow_active:
-                ev3, vals3 = loggedWindow.Show()
+                ev3, vals3 = loggedWindow.Read()
                 # if the user pressed the button virustotal then it will execute the code beneath it
                 if ev3 == 'VirusTotal':
-                    # the virustotal api
-                    vt = VirusTotal.VirusTotal('a0771fbe10241d2a6d00b13fa1449664845308d64daad53c48ad18bee3138130')
+                    vt = VirusTotal.VirusTotal(Sg.PopupGetText('Please enter your VirusTotal key: '))
                     # the chosen file will get send to virustotal
                     testfile = Sg.PopupGetFile('Which file would you like to check?', 'TUF - VirusTotal')
-
-                    print("Open de link voor het rapport:", vt.upload_file(testfile))
-                    hashresource = vt.upload_file(testfile)
-                    # the user gets a popup screen which takes him to the virustotal website
-                    Sg.Popup("Open de link voor het rapport:", vt.upload_file(testfile))
-                    # opens the browser
-                    webbrowser.open(vt.upload_file(testfile))
+                    # functie test_file uitvoeren
+                    # hier wordt de functie aangeroepen uit de klasse met de constructor
+                    virustotal = vt.test_file(testfile)
 
                 if ev3 == 'Open Case':
                     active_case = cases[vals3[0][0]][0]
@@ -149,6 +144,16 @@ while True:
 
                 if ev3 is None:
                     break
+
+            if not loggingWindow_active and ev3 == 'Logging':
+                loggingWindow_active = True
+                layout6 = [[table]]
+                # Giving the window the variable layout
+                createCaseWindow = Sg.Window('Turtle Forensics - Create Case', icon='ICON.ico').Layout(layout6)
+                # if the user presses the button create case then a screen will show up with fields that can be
+                # filled in
+                if loggingWindow_active and loggedin is True:
+                    ev6, vals6 = createCaseWindow.Read()
 
             if not createCaseWindow_active and ev3 == 'Create Case':
                 createCaseWindow_active = True
@@ -172,7 +177,7 @@ while True:
                         title = y[1]
                         z = ev4, vals4[2]
                         note = z[1]
-# shows a popup that notifies the user that a case has been made
+                        # shows a popup that notifies the user that a case has been made
                         makeCase(number, title, note)
                         Sg.Popup('The case: ', title, 'has been made.', icon='ICON.ico')
 
@@ -190,7 +195,7 @@ while True:
 
                 if createCaseWindow2_active:
                     ev5, vals5 = createCaseWindow2.Read()
-# if the button save is pressed and e01 or raw has been selected, then that image should be possible to open up
+                    # if the button save is pressed and e01 or raw has been selected, then that image should be possible to open up
                     if ev5 == 'Save':
                         if vals5['E01']:
                             print('e01')

@@ -129,6 +129,3 @@ if __name__ == '__main__':
     # bestand selecteren
     testfile = "test_bestand invoeren"
 
-    # functie test_file uitvoeren
-    # hier wordt de functie aangeroepen uit de klasse met de constructor
-    virustotal = vt.test_file(testfile)
