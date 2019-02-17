@@ -7,6 +7,10 @@
 # Import libraries used for time conversion and easy path joins
 import datetime
 from os.path import join as pjoin
+import os
+import lib.Hash
+import hashlib
+import sys
 
 # import libraries used to open an E01 and RAW image file
 import pyewf
@@ -34,10 +38,10 @@ class ewf_Img_Info(pytsk3.Img_Info):
 def addtodb(db, partition_id, parent_key,  md5_hash, sha256_hash, sha1_hash, name, create, modify, filepath, size, extension, f_type):
     db.set_file(partition_id, parent_key,  md5_hash, sha256_hash, sha1_hash, name, create, modify, filepath, size, extension, f_type)
 
-
+imagelocation = pjoin("ImageUSBSjors.dd.001")
 # Function to retreive data from a directory
 def getdirectorydata(db, change_dir, parent_key):
-    for f in test.main("ImageUSBSjors.dd.001", "raw", change_dir):
+    for f in test.main(imagelocation, "raw", change_dir):
         if f[10] == "DIR":
             changedir = change_dir
             if f[4] != "." and f[4] != "..":
@@ -51,7 +55,7 @@ def getdirectorydata(db, change_dir, parent_key):
 
 # Function where the file and folder extraction starts
 def start(db):
-    for f in test.main("ImageUSBSjors.dd.001", "raw"):
+    for f in test.main(imagelocation, "raw"):
         if f[10] == "DIR":
             if f[4] != "." and f[4] != "..":
                 addtodb(db, f[0], "", f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10])
@@ -71,18 +75,22 @@ class test:
 
             # Open Pytsk3 handle on E01 image
             imagehandle = ewf_Img_Info(ewf_handle)
-        else:
+        elif imagetype == 'raw':
             imagehandle = pytsk3.Img_Info(imagefile)
         volume = pytsk3.Volume_Info(imagehandle)
 
         # Check partitions for partition type and open them
         for partition in volume:
-            if 'NTFS' in partition.desc.decode('utf-8') or 'FAT16' in partition.desc.decode('utf-8') \
-                    or 'FAT32' in partition.desc.decode('utf-8') or 'EXT2' in partition.desc.decode('utf-8') \
-                    or 'EXT3' in partition.desc.decode('utf-8') or 'EXT4' in partition.desc.decode('utf-8'):
-                partition_id = partition.addr
-                filesystemObject = pytsk3.FS_Info(imagehandle, offset=partition.start * 512)
+            if partition.len > 2048 and "Unallocated" not in partition.desc.decode('utf-8') and "Extendend" \
+                    not in partition.desc.decode('utf-8') and "Primary Table" not in partition.desc.decode('utf-8'):
+                try:
+                    filesystemObject = pytsk3.FS_Info(imagehandle, offset=partition.start * 512)
+                except IOError:
+                    _, e, _ = sys.exc_info()
+                    print("[-] Unable to open FS:\n {}".format(e))
 
+                # filesystemObject = pytsk3.FS_Info(imagehandle, offset=partition.start * 512)
+                partition_id = partition.addr
                 # Open directory and change directory
                 root_dir = ""
                 current_dir = str(change_dir)
@@ -106,15 +114,34 @@ class test:
                             if "." in name:
                                 extension = name.rsplit(".")[-1].lower()
                     size = f.info.meta.size
-                    filepath = pjoin(current_dir, "/", f.info.name.name.decode('utf-8'))
+                    f_size = getattr(f.info.meta, "size", 0)
+                    filepath = current_dir + "/" + f.info.name.name.decode('utf-8')
                     create = datetime.datetime.fromtimestamp(f.info.meta.crtime).strftime('%Y-%m-%d %H:%M:%S')
                     modify = datetime.datetime.fromtimestamp(f.info.meta.mtime).strftime('%Y-%m-%d %H:%M:%S')
 
-                    md5_hash = ""
-                    sha256_hash = ""
-                    sha1_hash = ""
+                    if size > 0:
+                        hash_obj = hashlib.sha1()
+                        hash_obj.update(f.read_random(0, f_size))
+                        sha1_hash = hash_obj.hexdigest()
+
+                        hash_obj = hashlib.sha256()
+                        hash_obj.update(f.read_random(0, f_size))
+                        sha256_hash = hash_obj.hexdigest()
+
+                        hash_obj = hashlib.md5()
+                        hash_obj.update(f.read_random(0, f_size))
+                        md5_hash = hash_obj.hexdigest()
+                    else:
+                        sha1_hash = ""
+                        sha256_hash = ""
+                        md5_hash = ""
 
                     filelist.append([partition_id, md5_hash, sha256_hash, sha1_hash, name, create, modify, filepath,
                                      size, extension, f_type])
+
+                    # if f_type == "FILE" and size > 0:
+                    #     with open(pjoin(r"C:\Users\Gido Scherpenhuizen\Documents", name), "wb") as outfile:
+                    #         outfile.write(f.read_random(0, f.info.meta.size))
+
                 # Return the list of file data
                 return filelist
