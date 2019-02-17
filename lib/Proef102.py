@@ -1,3 +1,4 @@
+# PUSH BLYATt
 import lib.PySimpleGUI as Sg
 import lib.Image
 import lib.Sqlite
@@ -6,7 +7,7 @@ tree = Sg.TreeData()
 
 treegoed = Sg.Tree(data=tree,
                    headings=['partition_id', 'file_path', 'size', 'extension', 'file_type'],
-                   auto_size_columns=True,
+                   def_col_width=50,
                    right_click_menu=['&Right', ['Extract', 'Upload to VirusTotal']])
 
 folder_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABnUlEQVQ4y8WSv2rUQRSFv7vZ\
@@ -24,7 +25,7 @@ kAqRWy7+B7Z00G3xVc2wZeMSI4S7sVYkSk5Z/4PyBWROqvox3A28PN2cjUwinQC9QyckKALxj4kv2auK
 
 
 # Set the database
-db = lib.Sqlite.Sqlite(path=r"C:\Users\Gido Scherpenhuizen\Documents\,School\IIPFIT5\Project Files", filename="test")
+db = lib.Sqlite.Sqlite(path=r"C:\Users\Gido Scherpenhuizen\Documents", filename="test")
 db.setup_database()
 
 # Start the image extraction proces
