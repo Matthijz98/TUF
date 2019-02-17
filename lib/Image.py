@@ -4,6 +4,8 @@
 #      S1108069       #
 #######################
 
+# PUSH BLYAT
+
 # Import libraries used for time conversion and easy path joins
 import datetime
 from os.path import join as pjoin
