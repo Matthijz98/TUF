@@ -2,4 +2,5 @@ lib/__pycache__/
 docs/_build/
 database.db
 vcs.xml
-
+*.pyc
+database\.db
