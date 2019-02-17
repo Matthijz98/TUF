@@ -12,8 +12,6 @@ import PySimpleGUI as Sg
 from lib import Sqlite
 # enables the use of virustotal
 from lib import VirusTotal
-# openup a webbrowser
-import webbrowser
 
 path = os.path.dirname(os.path.realpath(__file__))
 print(path)
@@ -92,8 +90,8 @@ while True:
                 else:
                     Sg.Popup("Something went wrong. Try again.")
                     loggedin = False
-            # if the user tries to create a new account with a username that already exists it will show a popup screen and keep
-            # repeating the same window until he creates a new user or logs in
+            # if the user tries to create a new account with a username that already exists it will show a popup screen
+            # and keep repeating the same window until he creates a new user or logs in
             if ev2 == 'Create User' and loggedin is False:
                 created = db.check_username(vals2[0])
 
@@ -131,7 +129,7 @@ while True:
                 ev3, vals3 = loggedWindow.Read()
                 # if the user pressed the button virustotal then it will execute the code beneath it
                 if ev3 == 'VirusTotal':
-                    vt = VirusTotal.VirusTotal(Sg.PopupGetText('Please enter your VirusTotal key: '))
+                    vt = VirusTotal.VirusTotal(Sg.PopupGetText('Please enter your VirusTotal key: ', 'TUF - VirusTotal'))
                     # the chosen file will get send to virustotal
                     testfile = Sg.PopupGetFile('Which file would you like to check?', 'TUF - VirusTotal')
                     # functie test_file uitvoeren
@@ -195,7 +193,8 @@ while True:
 
                 if createCaseWindow2_active:
                     ev5, vals5 = createCaseWindow2.Read()
-                    # if the button save is pressed and e01 or raw has been selected, then that image should be possible to open up
+                    # if the button save is pressed and e01 or raw has been selected, then that image should be possible
+                    # to open up
                     if ev5 == 'Save':
                         if vals5['E01']:
                             print('e01')
