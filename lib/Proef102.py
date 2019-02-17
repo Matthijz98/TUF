@@ -1,4 +1,4 @@
-# PUSH BLYAT
+# PUSH BLYATt
 import lib.PySimpleGUI as Sg
 import lib.Image
 import lib.Sqlite
