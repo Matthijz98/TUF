@@ -4,13 +4,14 @@
 # s1105798            #
 #######################
 
-# allows the use of using the same path on multiple systems
+# All the libraries that are being imported.
+# Import OS: allows the use of using the same path on multiple systems
 import os
-# enables the use of pysimplegui
+# Import PySimpleGUI: enables the use of the pysimplegui
 import PySimpleGUI as Sg
-# enables the use of a sqllite database
+# Imports the script Sqlite from the directory 'lib' into the main.py script which enables the use of a sqlite database
 from lib import Sqlite
-# enables the use of virustotal
+# Imports the script VirusTotal from the directory 'lib' into the main.py script which enables the use of virustotal
 from lib import VirusTotal
 
 path = os.path.dirname(os.path.realpath(__file__))
@@ -36,7 +37,8 @@ layout = [[Sg.Text('At which location would you like to save the TUF database?')
 startWindow = Sg.Window('TUF - Turtle Forensics', icon='ICON.ico').Layout(layout)
 
 # When all windows are false then startWindow is active
-loggingWindow_active = createCaseWindow2_active = createCaseWindow_active = win4_active = loggedWindow_active = loginWindow_active = False
+treeviewWindow_active = loggingWindow_active = createCaseWindow2_active = createCaseWindow_active = win4_active = \
+    loggedWindow_active = loginWindow_active = False
 
 # When event and values are startWindow then they show that window.
 while True:
@@ -190,6 +192,13 @@ while True:
                         # Giving the window the variable layout
                         createCaseWindow2 = Sg.Window('Turtle Forensics - Create Case', icon='ICON.ico')\
                             .Layout(layout5)
+
+                        treeviewWindow_active = True
+                        createCaseWindow2_active = False
+                        createCaseWindow2.Hide()
+
+                        layout7 =
+
 
                 if createCaseWindow2_active:
                     ev5, vals5 = createCaseWindow2.Read()

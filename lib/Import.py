@@ -14,9 +14,9 @@ def getListOfFiles(dirName):
 
 
 def main():
-    dirName = r'C:\Users\Gido Scherpenhuizen\Documents\,School\IPFRCHT'
+    dirName = r'D:\School\2e Jaar\IPFJURI\Images'
     listOfFiles = getListOfFiles(dirName)
-    print (listOfFiles)
+    print(listOfFiles)
 
 
 if __name__ == "__main__":

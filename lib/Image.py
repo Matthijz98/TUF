@@ -4,13 +4,10 @@
 #      S1108069       #
 #######################
 
-# PUSH BLYATt
-
 # Import libraries used for time conversion and easy path joins
 import datetime
 from os.path import join as pjoin
 import os
-import lib.Hash
 import hashlib
 import sys
 
@@ -40,8 +37,11 @@ class ewf_Img_Info(pytsk3.Img_Info):
 def addtodb(db, partition_id, parent_key,  md5_hash, sha256_hash, sha1_hash, name, create, modify, filepath, size, extension, f_type):
     db.set_file(partition_id, parent_key,  md5_hash, sha256_hash, sha1_hash, name, create, modify, filepath, size, extension, f_type)
 
-imagelocation = pjoin("ImageUSBSjors.dd.001")
+
+imagelocation = pjoin(r"D:\School\2e Jaar\IPFJURI\Images\usb_maaike_flypicx.001")
 # Function to retreive data from a directory
+
+
 def getdirectorydata(db, change_dir, parent_key):
     for f in test.main(imagelocation, "raw", change_dir):
         if f[10] == "DIR":

@@ -1,4 +1,3 @@
-# PUSH BLYATt
 import lib.PySimpleGUI as Sg
 import lib.Image
 import lib.Sqlite
@@ -25,7 +24,7 @@ kAqRWy7+B7Z00G3xVc2wZeMSI4S7sVYkSk5Z/4PyBWROqvox3A28PN2cjUwinQC9QyckKALxj4kv2auK
 
 
 # Set the database
-db = lib.Sqlite.Sqlite(path=r"C:\Users\Gido Scherpenhuizen\Documents", filename="test")
+db = lib.Sqlite.Sqlite(path=r"D:\School\2e Jaar\IPFJURI\Images", filename="test")
 db.setup_database()
 
 # Start the image extraction proces
