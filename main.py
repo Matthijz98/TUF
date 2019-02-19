@@ -13,6 +13,8 @@ import PySimpleGUI as Sg
 from lib import Sqlite
 # Imports the script VirusTotal from the directory 'lib' into the main.py script which enables the use of virustotal
 from lib import VirusTotal
+from lib import Treeview
+from lib import Image
 
 path = os.path.dirname(os.path.realpath(__file__))
 print(path)
@@ -122,7 +124,7 @@ while True:
                    [Sg.Text('', key='OUTPUT')],
                    [Sg.Text('Would you like to create a new case or open a recent one?')],
                    [table],
-                   [Sg.Button('Open Case'), Sg.Button('Create Case'), Sg.Button('VirusTotal'), Sg.Button('Logging')]]
+                   [Sg.Button('Open Case'), Sg.Button('Create Case'), Sg.Button('VirusTotal'), Sg.Button('Logging'), Sg.Button('Treeview')]]
         # Giving the window the variable layout
         loggedWindow = Sg.Window('TUF - Turtle Forensics', icon='ICON.ico').Layout(layout3)
 
@@ -141,6 +143,25 @@ while True:
                 if ev3 == 'Open Case':
                     active_case = cases[vals3[0][0]][0]
                     break
+
+                if ev3 == 'Treeview':
+                    treeviewWindow_active = True
+                    loggedWindow_active = False
+                    loggedWindow.Hide()
+                    image = Sg.PopupGetFile('sdad')
+
+                    treeview = Sg.Tree(data=Treeview.showfiles(db, image),
+                                       headings=['partition_id', 'file_path', 'size', 'extension', 'file_type'],
+                                       def_col_width=50,
+                                       right_click_menu=['&Right', ['Extract', 'Upload to VirusTotal']])
+
+                    layout7 = [[Sg.Text('Welcome to Turtle Forensics!')],
+                               [treeview]]
+
+                    treeviewWindow = Sg.Window('TUF - Treeview', icon='ICON.ico').Layout(layout7)
+
+                    if treeviewWindow_active:
+                        ev7, vals7 = treeviewWindow.Read()
 
                 if ev3 is None:
                     break
@@ -184,21 +205,14 @@ while True:
                         createCaseWindow2_active = True
                         createCaseWindow_active = False
                         createCaseWindow.Hide()
-                        image = Sg.FileBrowse()
+
                         # The layout of the window is created with the 'layout' variable
                         layout5 = [[Sg.Radio('E01', "Image", key='E01'), Sg.Radio('RAW', "Image", key='RAW')],
-                                   [Sg.Text('Image source:    '), Sg.Input(), image],
+                                   [Sg.Text('Image source:    '), Sg.Input()],
                                    [Sg.Button('Back'), Sg.Button('Save')]]
                         # Giving the window the variable layout
                         createCaseWindow2 = Sg.Window('Turtle Forensics - Create Case', icon='ICON.ico')\
                             .Layout(layout5)
-
-                        treeviewWindow_active = True
-                        createCaseWindow2_active = False
-                        createCaseWindow2.Hide()
-
-                        layout7 =
-
 
                 if createCaseWindow2_active:
                     ev5, vals5 = createCaseWindow2.Read()
