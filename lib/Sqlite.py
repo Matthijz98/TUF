@@ -127,10 +127,11 @@ class Sqlite:
     # save all log items to a csv file
     def log2csv(self):
         data = self.get_log_items()
-        with open('output.csv', 'w') as f:
+        with open(self.path + '/log.csv', 'w') as f:
             writer = self.csv.writer(f)
             writer.writerow(['case_id', 'user_id', 'evidence_id', 'session_id', 'title', 'details', 'date_time'])
-            writer.writerows(data)
+            for row in data:
+                writer.writerow(row)
 
     # get all log logitems that meet the arguments
     def get_log_items(self):
@@ -222,7 +223,7 @@ class Sqlite:
         hash_password = self.hashlib.sha1(self.salt.encode('utf-8') + password.encode('utf-8')).hexdigest()
         self.c.execute('INSERT INTO users(user_name, password, created_at) VALUES(?, ?, ?)', (username, hash_password, date_time))
         self.conn.commit()
-        self.log_item(title="new user created", details="username:"+username+" password:"+password+"")
+        self.log_item(title="new user created", details="username:"+username+" password hash:"+hash_password+"")
 
     # check if the user password is correct
     def check_user(self, username, password):
@@ -233,8 +234,12 @@ class Sqlite:
             return False
         if result is not None:
             if self.hashlib.sha1(self.salt.encode('utf-8') + password.encode('utf-8')).hexdigest() == result[2]:
+                self.log_item(user_id=self.get_user_id(username)[0][0], title="user login",
+                              details="user: " + username + " logged in")
                 return True
             else:
+                self.log_item(user_id=self.get_user_id(username)[0][0], title="user could not login",
+                              details="user: " + username + " hash tryed to login")
                 return False
 
     # update the password from a user only if the old password is correct
@@ -250,6 +255,11 @@ class Sqlite:
     # get all users without the passwords of cource ;)
     def get_users(self):
         self.c.execute('SELECT user_name FROM users ')
+        return self.c.fetchone()
+
+    # get username from username
+    def get_user_id(self, username):
+        self.c.execute("SELECT user_id FROM users WHERE user_name = '%s'" % username)
         return self.c.fetchall()
 
     # assing a user to a case

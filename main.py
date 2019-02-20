@@ -168,13 +168,29 @@ while True:
 
             if not loggingWindow_active and ev3 == 'Logging':
                 loggingWindow_active = True
-                layout6 = [[table]]
+                loggedWindow_active = False
+                loggedWindow.Hide()
+                logs = db.get_log_items()
+                table = Sg.Table(logs,
+                                 headings=["log id", "evidence_id", "user_id", "session_id", "case_id", "date_time", "title", "details"],
+                                 enable_events=True)
+                # hides the window loginWindow
+                # The layout of the window is created with the 'layout' variable
+                layout8 = [[Sg.T(' ' * 20), Sg.Text('Welcome to Turtle Forensics!')],
+                           [Sg.Text('', key='OUTPUT')],
+                           [Sg.Text('This are all logs')],
+                           [table],
+                           [Sg.Button('export to csv'), Sg.Button('Ga terug')]]
                 # Giving the window the variable layout
-                createCaseWindow = Sg.Window('Turtle Forensics - Create Case', icon='ICON.ico').Layout(layout6)
-                # if the user presses the button create case then a screen will show up with fields that can be
-                # filled in
-                if loggingWindow_active and loggedin is True:
-                    ev6, vals6 = createCaseWindow.Read()
+                loggingWindow = Sg.Window('TUF - Turtle Forensics', icon='ICON.ico').Layout(layout8)
+
+                while True:
+                    if loggingWindow_active:
+                        ev8, vals8 = loggingWindow.Read()
+
+                        if ev8 == 'export to csv':
+                            db.log2csv()
+                            print("export")
 
             if not createCaseWindow_active and ev3 == 'Create Case':
                 createCaseWindow_active = True
