@@ -38,32 +38,32 @@ def addtodb(db, partition_id, parent_key,  md5_hash, sha256_hash, sha1_hash, nam
     db.set_file(partition_id, parent_key,  md5_hash, sha256_hash, sha1_hash, name, create, modify, filepath, size, extension, f_type)
 
 
-imagelocation = pjoin(r"D:\School\2e Jaar\IPFJURI\Images\usb_maaike_flypicx.001")
+
 # Function to retreive data from a directory
 
 
-def getdirectorydata(db, change_dir, parent_key):
-    for f in test.main(imagelocation, "raw", change_dir):
+def getdirectorydata(db, image, change_dir, parent_key):
+    for f in test.main(image, "raw", change_dir):
         if f[10] == "DIR":
             changedir = change_dir
             if f[4] != "." and f[4] != "..":
                 addtodb(db, f[0], parent_key, f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10])
                 changedir = change_dir + "/" + f[4]
                 p_key = f[4]
-                getdirectorydata(db, changedir, p_key)
+                getdirectorydata(db, image, changedir, p_key)
         else:
             addtodb(db, f[0], parent_key, f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10])
 
 
 # Function where the file and folder extraction starts
-def start(db):
-    for f in test.main(imagelocation, "raw"):
+def start(db, image):
+    for f in test.main(image, "raw"):
         if f[10] == "DIR":
             if f[4] != "." and f[4] != "..":
                 addtodb(db, f[0], "", f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10])
                 change_dir = f[4]
                 parent_key = f[4]
-                getdirectorydata(db, change_dir, parent_key)
+                getdirectorydata(db, image, change_dir, parent_key)
         else:
             addtodb(db, f[0], "", f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10])
 
