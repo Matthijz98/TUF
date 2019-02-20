@@ -42,31 +42,30 @@ imagelocation = pjoin("ImageUSBSjors.dd.001")
 
 
 # Function to retreive data from a directory
-def getdirectorydata(db, change_dir, parent_key):
-    for f in test.main(imagelocation, "raw", change_dir):
+def getdirectorydata(db, change_dir, parent_key, imagetype):
+    for f in test.main(imagelocation, imagetype, change_dir):
         if f[10] == "DIR":
             changedir = change_dir
             if f[4] != "." and f[4] != "..":
                 addtodb(db, f[0], parent_key, f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10])
                 changedir = change_dir + "/" + f[4]
                 p_key = f[4]
-                getdirectorydata(db, changedir, p_key)
+                getdirectorydata(db, changedir, p_key, imagetype)
         else:
             addtodb(db, f[0], parent_key, f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10])
 
 
 # Function where the file and folder extraction starts
-def start(db):
-    for f in test.main(imagelocation, "raw"):
+def start(db, imagetype):
+    for f in test.main(imagelocation, imagetype):
         if f[10] == "DIR":
             if f[4] != "." and f[4] != "..":
                 addtodb(db, f[0], "", f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10])
                 change_dir = f[4]
                 parent_key = f[4]
-                getdirectorydata(db, change_dir, parent_key)
+                getdirectorydata(db, change_dir, parent_key, imagetype)
         else:
             addtodb(db, f[0], "", f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10])
-
 
 class test:
     def main(imagefile, imagetype, change_dir=None):
