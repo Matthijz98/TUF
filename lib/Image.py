@@ -4,10 +4,10 @@
 #      S1108069       #
 #######################
 
+#MERGED BLYAT
 # Import libraries used for time conversion and easy path joins
 import datetime
 from os.path import join as pjoin
-import os
 import hashlib
 import sys
 
@@ -38,32 +38,32 @@ def addtodb(db, partition_id, parent_key,  md5_hash, sha256_hash, sha1_hash, nam
     db.set_file(partition_id, parent_key,  md5_hash, sha256_hash, sha1_hash, name, create, modify, filepath, size, extension, f_type)
 
 
+imagelocation = pjoin("ImageUSBSjors.dd.001")
+
 
 # Function to retreive data from a directory
-
-
-def getdirectorydata(db, image, change_dir, parent_key):
-    for f in test.main(image, "raw", change_dir):
+def getdirectorydata(db, change_dir, parent_key):
+    for f in test.main(imagelocation, "raw", change_dir):
         if f[10] == "DIR":
             changedir = change_dir
             if f[4] != "." and f[4] != "..":
                 addtodb(db, f[0], parent_key, f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10])
                 changedir = change_dir + "/" + f[4]
                 p_key = f[4]
-                getdirectorydata(db, image, changedir, p_key)
+                getdirectorydata(db, changedir, p_key)
         else:
             addtodb(db, f[0], parent_key, f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10])
 
 
 # Function where the file and folder extraction starts
-def start(db, image):
-    for f in test.main(image, "raw"):
+def start(db):
+    for f in test.main(imagelocation, "raw"):
         if f[10] == "DIR":
             if f[4] != "." and f[4] != "..":
                 addtodb(db, f[0], "", f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10])
                 change_dir = f[4]
                 parent_key = f[4]
-                getdirectorydata(db, image, change_dir, parent_key)
+                getdirectorydata(db, change_dir, parent_key)
         else:
             addtodb(db, f[0], "", f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10])
 
@@ -85,13 +85,14 @@ class test:
         for partition in volume:
             if partition.len > 2048 and "Unallocated" not in partition.desc.decode('utf-8') and "Extendend" \
                     not in partition.desc.decode('utf-8') and "Primary Table" not in partition.desc.decode('utf-8'):
+                print(partition.addr)
                 try:
                     filesystemObject = pytsk3.FS_Info(imagehandle, offset=partition.start * 512)
                 except IOError:
                     _, e, _ = sys.exc_info()
                     print("[-] Unable to open FS:\n {}".format(e))
 
-                # filesystemObject = pytsk3.FS_Info(imagehandle, offset=partition.start * 512)
+                filesystemObject = pytsk3.FS_Info(imagehandle, offset=partition.start * 512)
                 partition_id = partition.addr
                 # Open directory and change directory
                 root_dir = ""
@@ -107,6 +108,7 @@ class test:
                 # Open and check every file for data
                 for f in open_current_dir:
                     name = f.info.name.name.decode('utf-8')
+                    print(name)
                     if hasattr(f.info.meta, 'type'):
                         if f.info.meta.type == pytsk3.TSK_FS_META_TYPE_DIR:
                             f_type = "DIR"
@@ -115,6 +117,8 @@ class test:
                             f_type = "FILE"
                             if "." in name:
                                 extension = name.rsplit(".")[-1].lower()
+                            else:
+                                extension = ""
                     size = f.info.meta.size
                     f_size = getattr(f.info.meta, "size", 0)
                     filepath = current_dir + "/" + f.info.name.name.decode('utf-8')
@@ -141,9 +145,11 @@ class test:
                     filelist.append([partition_id, md5_hash, sha256_hash, sha1_hash, name, create, modify, filepath,
                                      size, extension, f_type])
 
-                    # if f_type == "FILE" and size > 0:
-                    #     with open(pjoin(r"C:\Users\Gido Scherpenhuizen\Documents", name), "wb") as outfile:
-                    #         outfile.write(f.read_random(0, f.info.meta.size))
+                    #if f_type == "FILE" and size > 0:
+                    #    with open(pjoin(r"C:\Users\Gido Scherpenhuizen\Documents\OUTPUT", name), "wb") as outfile:
+                    #        outfile.write(f.read_random(0, f.info.meta.size))
 
                 # Return the list of file data
                 return filelist
+            else:
+                print("ERROR")
