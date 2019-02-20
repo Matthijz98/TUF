@@ -32,9 +32,9 @@ kAqRWy7+B7Z00G3xVc2wZeMSI4S7sVYkSk5Z/4PyBWROqvox3A28PN2cjUwinQC9QyckKALxj4kv2auK
 
 # Add the data of every file and folder to the treeview
 
-def showfiles(db, image):
+def showfiles(db, image, imagetype):
     data = Sg.TreeData()
-    lib.Image.start(db, image)
+    lib.Image.start(db, image, imagetype)
 
     # main
     database = db.get_files()

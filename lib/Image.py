@@ -38,32 +38,32 @@ def addtodb(db, partition_id, parent_key,  md5_hash, sha256_hash, sha1_hash, nam
     db.set_file(partition_id, parent_key,  md5_hash, sha256_hash, sha1_hash, name, create, modify, filepath, size, extension, f_type)
 
 
-imagelocation = pjoin("ImageUSBSjors.dd.001")
+# imagelocation = pjoin("ImageUSBSjors.dd.001")
 
 
 # Function to retreive data from a directory
-def getdirectorydata(db, change_dir, parent_key, imagetype):
-    for f in test.main(imagelocation, imagetype, change_dir):
+def getdirectorydata(db, image, change_dir, parent_key, imagetype):
+    for f in test.main(image, imagetype, change_dir):
         if f[10] == "DIR":
             changedir = change_dir
             if f[4] != "." and f[4] != "..":
                 addtodb(db, f[0], parent_key, f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10])
                 changedir = change_dir + "/" + f[4]
                 p_key = f[4]
-                getdirectorydata(db, changedir, p_key, imagetype)
+                getdirectorydata(db, image, changedir, p_key, imagetype)
         else:
             addtodb(db, f[0], parent_key, f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10])
 
 
 # Function where the file and folder extraction starts
-def start(db, imagetype):
-    for f in test.main(imagelocation, imagetype):
+def start(db, image, imagetype):
+    for f in test.main(image, imagetype):
         if f[10] == "DIR":
             if f[4] != "." and f[4] != "..":
                 addtodb(db, f[0], "", f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10])
                 change_dir = f[4]
                 parent_key = f[4]
-                getdirectorydata(db, change_dir, parent_key, imagetype)
+                getdirectorydata(db, image, change_dir, parent_key, imagetype)
         else:
             addtodb(db, f[0], "", f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10])
 
@@ -150,5 +150,4 @@ class test:
 
                 # Return the list of file data
                 return filelist
-            else:
-                print("ERROR")
+

@@ -236,7 +236,25 @@ while True:
                     # to open up
                     if ev5 == 'Save':
                         if vals5['E01']:
-                            print("e01")
+                            treeviewWindow_active = True
+                            createCaseWindow2_active = False
+                            createCaseWindow2.Hide()
+                            image = Sg.PopupGetFile('Which image would you like to open?', 'TUF - Choose image')
+                            Sg.Popup('The image is being read!')
+                            data = Treeview.showfiles(db, image, 'e01')
+
+                            treeview = Sg.Tree(data=data,
+                                               headings=['partition_id', 'file_path', 'size', 'extension', 'file_type'],
+                                               def_col_width=50,
+                                               right_click_menu=['&Right', ['Extract', 'Upload to VirusTotal']])
+
+                            layout7 = [[Sg.Text('Welcome to Turtle Forensics!')],
+                                       [treeview]]
+
+                            treeviewWindow = Sg.Window('TUF - Treeview', icon='ICON.ico').Layout(layout7)
+
+                            if treeviewWindow_active:
+                                ev7, vals7 = treeviewWindow.Read()
 
                         if vals5['RAW']:
                             treeviewWindow_active = True
@@ -244,7 +262,9 @@ while True:
                             createCaseWindow2.Hide()
                             image = Sg.PopupGetFile('Which image would you like to open?', 'TUF - Choose image')
                             Sg.Popup('The image is being read!')
-                            treeview = Sg.Tree(data=Treeview.showfiles(db, image),
+                            data = Treeview.showfiles(db, image, 'raw')
+
+                            treeview = Sg.Tree(data=data,
                                                headings=['partition_id', 'file_path', 'size', 'extension', 'file_type'],
                                                def_col_width=50,
                                                right_click_menu=['&Right', ['Extract', 'Upload to VirusTotal']])
