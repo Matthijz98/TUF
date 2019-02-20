@@ -129,7 +129,7 @@ class Sqlite:
         data = self.get_log_items()
         with open(self.path + '/log.csv', 'w') as f:
             writer = self.csv.writer(f)
-            writer.writerow(['case_id', 'user_id', 'evidence_id', 'session_id', 'title', 'details', 'date_time'])
+            writer.writerow(['log id', 'case_id', 'user_id', 'evidence_id', 'session_id', 'date time', 'title', 'details'])
             for row in data:
                 writer.writerow(row)
 
