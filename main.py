@@ -13,8 +13,8 @@ import PySimpleGUI as Sg
 from lib import Sqlite
 # Imports the script VirusTotal from the directory 'lib' into the main.py script which enables the use of virustotal
 from lib import VirusTotal
+# Imports the script Treeview from the directory 'lib' into the main.py script which enables the use of the treeview
 from lib import Treeview
-from lib import Image
 
 path = os.path.dirname(os.path.realpath(__file__))
 print(path)
@@ -72,13 +72,12 @@ while True:
     # if loginWindow is active then the code underneath will run
     if loginWindow_active:
         ev2, vals2 = loginWindow.Read()
+        username = vals2[0]
+        password = vals2[1]
         # while the user hasn't logged in then the program will keep showing the same window
         while loggedin is False:
-
             if ev2 == 'Login':
                 # giving variables values which will check if they match in the database
-                username = vals2[0]
-                password = vals2[1]
                 check_loggedin = db.check_user(username, password)
                 # if the username and password are the same as the ones in the database then a popup will show up
                 if check_loggedin is True:
@@ -86,7 +85,7 @@ while True:
                     Sg.Popup("You've been logged in successfully! Welcome " + vals2[0] + "!")
                     break
                 # if the values don't correspond with the values in the database then a popup will show up
-                elif check_loggedin is False:
+                elif check_loggedin is False or username == "":
                     loggedin = False
                     Sg.Popup("This combination of username and password does not exist.")
                     ev2, vals2 = loginWindow.Read()
@@ -99,7 +98,10 @@ while True:
             if ev2 == 'Create User' and loggedin is False:
                 created = db.check_username(vals2[0])
 
-                if created is False:
+                if username is None and password is None:
+                    Sg.Popup("Nein")
+
+                elif created is False:
                     db.set_user(username=vals2[0], password=vals2[1])
                     Sg.Popup("The user with the name " + vals2[0] + " has been created!")
                     loggedin = True
@@ -148,7 +150,7 @@ while True:
                     treeviewWindow_active = True
                     loggedWindow_active = False
                     loggedWindow.Hide()
-                    image = Sg.PopupGetFile('sdad')
+                    image = Sg.PopupGetFile('Which image would you like to open?', 'TUF - Choose image')
 
                     treeview = Sg.Tree(data=Treeview.showfiles(db, image),
                                        headings=['partition_id', 'file_path', 'size', 'extension', 'file_type'],
@@ -163,8 +165,8 @@ while True:
                     if treeviewWindow_active:
                         ev7, vals7 = treeviewWindow.Read()
 
-                if ev3 is None:
-                    break
+            if ev3 is None:
+                break
 
             if not loggingWindow_active and ev3 == 'Logging':
                 loggingWindow_active = True
