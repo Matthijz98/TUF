@@ -4,7 +4,6 @@
 #      S1108069       #
 #######################
 
-# PUSH BLYATt
 
 # Import libraries used for time conversion and easy path joins
 import datetime
