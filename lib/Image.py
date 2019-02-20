@@ -9,8 +9,6 @@
 # Import libraries used for time conversion and easy path joins
 import datetime
 from os.path import join as pjoin
-import os
-import lib.Hash
 import hashlib
 import sys
 
@@ -40,7 +38,10 @@ class ewf_Img_Info(pytsk3.Img_Info):
 def addtodb(db, partition_id, parent_key,  md5_hash, sha256_hash, sha1_hash, name, create, modify, filepath, size, extension, f_type):
     db.set_file(partition_id, parent_key,  md5_hash, sha256_hash, sha1_hash, name, create, modify, filepath, size, extension, f_type)
 
+
 imagelocation = pjoin("ImageUSBSjors.dd.001")
+
+
 # Function to retreive data from a directory
 def getdirectorydata(db, change_dir, parent_key):
     for f in test.main(imagelocation, "raw", change_dir):
@@ -85,13 +86,14 @@ class test:
         for partition in volume:
             if partition.len > 2048 and "Unallocated" not in partition.desc.decode('utf-8') and "Extendend" \
                     not in partition.desc.decode('utf-8') and "Primary Table" not in partition.desc.decode('utf-8'):
+                print(partition.addr)
                 try:
                     filesystemObject = pytsk3.FS_Info(imagehandle, offset=partition.start * 512)
                 except IOError:
                     _, e, _ = sys.exc_info()
                     print("[-] Unable to open FS:\n {}".format(e))
 
-                # filesystemObject = pytsk3.FS_Info(imagehandle, offset=partition.start * 512)
+                filesystemObject = pytsk3.FS_Info(imagehandle, offset=partition.start * 512)
                 partition_id = partition.addr
                 # Open directory and change directory
                 root_dir = ""
@@ -107,6 +109,7 @@ class test:
                 # Open and check every file for data
                 for f in open_current_dir:
                     name = f.info.name.name.decode('utf-8')
+                    print(name)
                     if hasattr(f.info.meta, 'type'):
                         if f.info.meta.type == pytsk3.TSK_FS_META_TYPE_DIR:
                             f_type = "DIR"
@@ -115,6 +118,8 @@ class test:
                             f_type = "FILE"
                             if "." in name:
                                 extension = name.rsplit(".")[-1].lower()
+                            else:
+                                extension = ""
                     size = f.info.meta.size
                     f_size = getattr(f.info.meta, "size", 0)
                     filepath = current_dir + "/" + f.info.name.name.decode('utf-8')
@@ -141,9 +146,11 @@ class test:
                     filelist.append([partition_id, md5_hash, sha256_hash, sha1_hash, name, create, modify, filepath,
                                      size, extension, f_type])
 
-                    # if f_type == "FILE" and size > 0:
-                    #     with open(pjoin(r"C:\Users\Gido Scherpenhuizen\Documents", name), "wb") as outfile:
-                    #         outfile.write(f.read_random(0, f.info.meta.size))
+                    #if f_type == "FILE" and size > 0:
+                    #    with open(pjoin(r"C:\Users\Gido Scherpenhuizen\Documents\OUTPUT", name), "wb") as outfile:
+                    #        outfile.write(f.read_random(0, f.info.meta.size))
 
                 # Return the list of file data
                 return filelist
+            else:
+                print("ERROR")
