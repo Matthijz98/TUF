@@ -223,10 +223,8 @@ while True:
                         createCaseWindow2_active = True
                         createCaseWindow_active = False
                         createCaseWindow.Hide()
-
                         # The layout of the window is created with the 'layout' variable
                         layout5 = [[Sg.Radio('E01', "Image", key='E01'), Sg.Radio('RAW', "Image", key='RAW')],
-                                   [Sg.Text('Image source:    '), Sg.Input()],
                                    [Sg.Button('Back'), Sg.Button('Save')]]
                         # Giving the window the variable layout
                         createCaseWindow2 = Sg.Window('Turtle Forensics - Create Case', icon='ICON.ico')\
@@ -238,10 +236,26 @@ while True:
                     # to open up
                     if ev5 == 'Save':
                         if vals5['E01']:
-                            print('e01')
+                            print("e01")
 
                         if vals5['RAW']:
-                            print('raw')
+                            treeviewWindow_active = True
+                            createCaseWindow2_active = False
+                            createCaseWindow2.Hide()
+                            image = Sg.PopupGetFile('Which image would you like to open?', 'TUF - Choose image')
+                            Sg.Popup('The image is being read!')
+                            treeview = Sg.Tree(data=Treeview.showfiles(db, image),
+                                               headings=['partition_id', 'file_path', 'size', 'extension', 'file_type'],
+                                               def_col_width=50,
+                                               right_click_menu=['&Right', ['Extract', 'Upload to VirusTotal']])
+
+                            layout7 = [[Sg.Text('Welcome to Turtle Forensics!')],
+                                       [treeview]]
+
+                            treeviewWindow = Sg.Window('TUF - Treeview', icon='ICON.ico').Layout(layout7)
+
+                            if treeviewWindow_active:
+                                ev7, vals7 = treeviewWindow.Read()
 
                 if ev5 is None:
                     break
