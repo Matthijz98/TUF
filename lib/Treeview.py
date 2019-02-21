@@ -40,21 +40,21 @@ def showfiles(db, image, imagetype):
     database = db.get_files()
 
     for f in database:
-        if f[12] == "DIR":
-            list = [f[2], f[9], f[10], f[11], f[12]]
+        if f[13] == "DIR":
+            list = [f[2], f[10], f[11], f[12], f[13]]
             if f[1] == "":
-                data.Insert(f[1], f[0], f[6], list, icon=folder_icon)
+                data.Insert(f[1], f[0], f[7], list, icon=folder_icon)
             else:
                 p_key = db.get_parent_key(f[1])
-                data.Insert(p_key[0], f[0], f[6], list, icon=folder_icon)
+                data.Insert(p_key[0], f[0], f[7], list, icon=folder_icon)
 
         else:
-            list = [f[2], f[9], f[10], f[11], f[12]]
+            list = [f[2], f[10], f[11], f[12], f[13]]
             if f[1] == "":
-                data.Insert(f[1], f[0], f[6], list, icon=file_icon)
+                data.Insert(f[1], f[0], f[7], list, icon=file_icon)
             else:
                 p_key = db.get_parent_key(f[1])
-                data.Insert(p_key[0], f[0], f[6], list, icon=file_icon)
+                data.Insert(p_key[0], f[0], f[7], list, icon=file_icon)
 
     return data
 

@@ -34,8 +34,8 @@ class ewf_Img_Info(pytsk3.Img_Info):
 
 
 # Function to add data to the database
-def addtodb(db, partition_id, parent_key,  md5_hash, sha256_hash, sha1_hash, name, create, modify, filepath, size, extension, f_type):
-    db.set_file(partition_id, parent_key,  md5_hash, sha256_hash, sha1_hash, name, create, modify, filepath, size, extension, f_type)
+def addtodb(db, partition_id, partition_offset, parent_key,  md5_hash, sha256_hash, sha1_hash, name, create, modify, filepath, size, extension, f_type):
+    db.set_file(partition_id, partition_offset, parent_key,  md5_hash, sha256_hash, sha1_hash, name, create, modify, filepath, size, extension, f_type)
 
 
 # imagelocation = pjoin("ImageUSBSjors.dd.001")
@@ -47,12 +47,12 @@ def getdirectorydata(db, image, change_dir, parent_key, imagetype):
         if f[10] == "DIR":
             changedir = change_dir
             if f[4] != "." and f[4] != "..":
-                addtodb(db, f[0], parent_key, f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10])
+                addtodb(db, f[0], parent_key, f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10], f[11])
                 changedir = change_dir + "/" + f[4]
                 p_key = f[4]
                 getdirectorydata(db, image, changedir, p_key, imagetype)
         else:
-            addtodb(db, f[0], parent_key, f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10])
+            addtodb(db, f[0], parent_key, f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10], f[11])
 
 
 # Function where the file and folder extraction starts
@@ -60,12 +60,12 @@ def start(db, image, imagetype):
     for f in test.main(image, imagetype):
         if f[10] == "DIR":
             if f[4] != "." and f[4] != "..":
-                addtodb(db, f[0], "", f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10])
+                addtodb(db, f[0], "", f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10], f[11])
                 change_dir = f[4]
                 parent_key = f[4]
                 getdirectorydata(db, image, change_dir, parent_key, imagetype)
         else:
-            addtodb(db, f[0], "", f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10])
+            addtodb(db, f[0], "", f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10], f[11])
 
 class test:
     def main(imagefile, imagetype, change_dir=None):
@@ -93,6 +93,7 @@ class test:
 
                 filesystemObject = pytsk3.FS_Info(imagehandle, offset=partition.start * 512)
                 partition_id = partition.addr
+                partition_offset = partition.start * 512
                 # Open directory and change directory
                 root_dir = ""
                 current_dir = str(change_dir)
@@ -142,7 +143,7 @@ class test:
                         md5_hash = ""
 
                     filelist.append([partition_id, md5_hash, sha256_hash, sha1_hash, name, create, modify, filepath,
-                                     size, extension, f_type])
+                                     size, extension, f_type, partition_offset])
 
                     #if f_type == "FILE" and size > 0:
                     #    with open(pjoin(r"C:\Users\Gido Scherpenhuizen\Documents\OUTPUT", name), "wb") as outfile:
@@ -151,3 +152,19 @@ class test:
                 # Return the list of file data
                 return filelist
 
+    def extract_file(image, filepath, imagetype, name, savelocation, partition_offset):
+        if imagetype == 'e01':
+            filenames = pyewf.glob(image)
+            ewf_handle = pyewf.handle()
+            ewf_handle.open(filenames)
+
+            # Open Pytsk3 handle on E01 image
+            imagehandle = ewf_Img_Info(ewf_handle)
+        elif imagetype == 'raw':
+            imagehandle = pytsk3.Img_Info(image)
+        volume = pytsk3.Volume_Info(imagehandle)
+        file_system_object = pytsk3.FS_Info(imagehandle, partition_offset)
+        file_object = file_system_object.open(filepath)
+        outfile = open(pjoin(savelocation, name), 'wb')
+        filedata = file_object.read_random(0, file_object.info.meta.size)
+        outfile.write(filedata)

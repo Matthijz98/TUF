@@ -80,6 +80,7 @@ class Sqlite:
                        'file_id integer PRIMARY KEY AUTOINCREMENT,'
                        'file_parrent text,'
                        'partition_id blob,'
+                       'partition_offset integer,'
                        'file_md5 text,'
                        'file_sha256 text,'
                        'file_sha1 text,'
@@ -199,9 +200,9 @@ class Sqlite:
                            'VALUES (? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,?)', (values))
         self.conn.commit()
 
-    def set_file(self, partition_id = None, file_parrent = None, file_md5 = None, file_sha256 = None, file_sha1 = None, title = None, date_created = None, date_last_modified = None, file_path = None, size = None, extention = None, file_type = None):
-        self.c.execute('INSERT INTO files (partition_id, file_parrent, file_md5, file_sha256, file_sha1, title, date_created, date_last_modified, file_path, size, extention, file_type) '
-                           'VALUES (? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,?, ?)', (partition_id, file_parrent, file_md5, file_sha256, file_sha1, title, date_created, date_last_modified, file_path, size, extention, file_type))
+    def set_file(self, partition_id = None, file_parrent = None, file_md5 = None, file_sha256 = None, file_sha1 = None, title = None, date_created = None, date_last_modified = None, file_path = None, size = None, extention = None, file_type = None, partition_offset=None):
+        self.c.execute('INSERT INTO files (partition_id, file_parrent, file_md5, file_sha256, file_sha1, title, date_created, date_last_modified, file_path, size, extention, file_type, partition_offset) '
+                           'VALUES (? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,?, ?, ?)', (partition_id, file_parrent, file_md5, file_sha256, file_sha1, title, date_created, date_last_modified, file_path, size, extention, file_type, partition_offset))
         self.conn.commit()
 
     # get all files that meet the arguments

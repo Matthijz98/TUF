@@ -16,6 +16,8 @@ from lib import VirusTotal
 # Imports the script Treeview from the directory 'lib' into the main.py script which enables the use of the treeview
 from lib import Treeview
 
+from lib import Image
+
 path = os.path.dirname(os.path.realpath(__file__))
 print(path)
 name = 'database'
@@ -249,9 +251,14 @@ while True:
                                                right_click_menu=['&Right', ['Extract', 'Upload to VirusTotal']])
 
                             layout7 = [[Sg.Text('Welcome to Turtle Forensics!')],
-                                       [treeview]]
+                                       [treeview],
+                                       [Sg.Button("Hash file")],
+                                       [Sg.Button("Extract file")]]
 
                             treeviewWindow = Sg.Window('TUF - Treeview', icon='ICON.ico').Layout(layout7)
+
+
+
 
                             if treeviewWindow_active:
                                 ev7, vals7 = treeviewWindow.Read()
@@ -270,12 +277,33 @@ while True:
                                                right_click_menu=['&Right', ['Extract', 'Upload to VirusTotal']])
 
                             layout7 = [[Sg.Text('Welcome to Turtle Forensics!')],
-                                       [treeview]]
+                                       [treeview],
+                                       [Sg.Button("Hash file")],
+                                       [Sg.Button("Extract file")]]
 
                             treeviewWindow = Sg.Window('TUF - Treeview', icon='ICON.ico').Layout(layout7)
 
+
                             if treeviewWindow_active:
                                 ev7, vals7 = treeviewWindow.Read()
+
+                            if ev7 == "Hash file":
+                                for file_id in vals1[0]:
+                                    hash_list = db.get_file_hash(file_id)
+                                    print(hash_list)
+                                    hash_tuple = hash_list[0]
+                                    text = "md5: " + hash_tuple[0] + "\n \n" + "sha256: " + hash_tuple[1] \
+                                           + "\n \n" + "sha1: " + hash_tuple[2]
+                                    Sg.Popup("File Hash", text)
+
+                            if ev7 == "Extract file":
+                                for file_id in vals1[0]:
+                                    filepath_list = db.get_file_path(file_id)
+                                    for filepath_from_filepath_list in filepath_list[0]:
+                                        file_name_list = db.get_file_name(file_id)
+                                        for file_name in file_name_list[0]:
+                                            Image.test.extract_file(image, filepath_from_filepath_list, "raw",
+                                                            file_name, r"C:\Users\Gido Scherpenhuizen\Documents\OUTPUT")
 
                 if ev5 is None:
                     break
