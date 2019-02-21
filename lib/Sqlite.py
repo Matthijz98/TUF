@@ -208,6 +208,14 @@ class Sqlite:
         self.c.execute('SELECT * FROM files')
         return self.c.fetchall()
 
+    def get_file_name(self, file_id):
+        self.c.execute("SELECT title FROM files WHERE files.file_id == '%s'" % file_id)
+        return self.c.fetchall()
+
+    def get_file_path(self, file_id):
+        self.c.execute("SELECT file_path from files WHERE files.file_id == '%s'" % file_id)
+        return self.c.fetchall()
+
     def get_parent_key(self, name):
         self.c.execute("SELECT file_id FROM files WHERE files.title == '%s'" % name)
         return self.c.fetchone()

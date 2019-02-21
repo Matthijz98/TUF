@@ -11,6 +11,7 @@ treegoed = Sg.Tree(data=tree,
                    pad=20)
 
 testbutton = Sg.Button(button_text="EXTRACT BLYAT")
+extract_button = Sg.Button(button_text="Extract")
 
 folder_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABnUlEQVQ4y8WSv2rUQRSFv7vZ\
 gJFFsQg2EkWb4AvEJ8hqKVilSmFn3iNvIAp21oIW9haihBRKiqwElMVsIJjNrprsOr/5dyzml3UhEQIWHhjmcpn7zblw4B9lJ8Xag9mlmQb3AJzX3tOX8\
@@ -58,7 +59,8 @@ for f in database:
 # Create a layout which is used for a window
 layout = [[Sg.Text('Welcome to Turtle Forensics!')],
           [treegoed],
-          [testbutton]]
+          [testbutton],
+          [extract_button]]
 
 
 win1 = Sg.Window('TUF - Turtle Forensics').Layout(layout)
@@ -70,6 +72,18 @@ while True:
     ev1, vals1 = win1.Read()
     if ev1 == 'EXTRACT BLYAT':
         print("BLYAT EXTRACTED")
+        for filelist in vals1:
+            for file in filelist:
+                print(db.get_file_path(file))
+
+    if ev1 == "Extract":
+        for filelist in vals1:
+            for file in filelist:
+                for list in db.get_file_path(file):
+                    for tuple in list:
+                        lib.Image.test.extract_file("ImageUSBSjors.dd.001", tuple, "raw", db.get_file_name(file), r"C:\Users\Gido Scherpenhuizen\Documents\OUTPUT")
+                        print("Blyat Extracted, Putin returning to comrads")
+
 
     if vals1[0] == 'selected':
         print("CLICKED")

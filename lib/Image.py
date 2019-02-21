@@ -121,7 +121,10 @@ class test:
                                 extension = ""
                     size = f.info.meta.size
                     f_size = getattr(f.info.meta, "size", 0)
-                    filepath = current_dir + "/" + f.info.name.name.decode('utf-8')
+                    if current_dir == "None":
+                        filepath = "/" + f.info.name.name.decode('utf-8')
+                    else:
+                        filepath = "/" + current_dir + "/" + f.info.name.name.decode('utf-8')
                     create = datetime.datetime.fromtimestamp(f.info.meta.crtime).strftime('%Y-%m-%d %H:%M:%S')
                     modify = datetime.datetime.fromtimestamp(f.info.meta.mtime).strftime('%Y-%m-%d %H:%M:%S')
 
@@ -145,11 +148,24 @@ class test:
                     filelist.append([partition_id, md5_hash, sha256_hash, sha1_hash, name, create, modify, filepath,
                                      size, extension, f_type])
 
-                    #if f_type == "FILE" and size > 0:
-                    #    with open(pjoin(r"C:\Users\Gido Scherpenhuizen\Documents\OUTPUT", name), "wb") as outfile:
-                    #        outfile.write(f.read_random(0, f.info.meta.size))
-
                 # Return the list of file data
                 return filelist
             else:
                 print("ERROR")
+
+    def extract_file(image, filepath, imagetype, name, savelocation):
+        if imagetype == 'e01':
+            filenames = pyewf.glob(image)
+            ewf_handle = pyewf.handle()
+            ewf_handle.open(filenames)
+
+            # Open Pytsk3 handle on E01 image
+            imagehandle = ewf_Img_Info(ewf_handle)
+        elif imagetype == 'raw':
+            imagehandle = pytsk3.Img_Info(image)
+        volume = pytsk3.Volume_Info(imagehandle)
+        file_system_object = pytsk3.FS_Info(imagehandle, 16384)
+        file_object = file_system_object.open(filepath)
+        outfile = open(pjoin(savelocation + '/' + name), 'wb')
+        filedata = file_object.read_random(0, file_object.info.meta.size)
+        outfile.write(filedata)
