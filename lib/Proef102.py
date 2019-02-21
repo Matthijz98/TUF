@@ -77,14 +77,23 @@ while True:
                 print(db.get_file_path(file))
 
     if ev1 == "Extract":
-        for filelist in vals1:
-            for file in filelist:
-                for list in db.get_file_path(file):
-                    for tuple in list:
-                        print(list)
-                        print(tuple)
-                        lib.Image.test.extract_file("ImageUSBSjors.dd.001", tuple, "raw", db.get_file_name(file), r"C:\Users\Gido Scherpenhuizen\Documents\OUTPUT")
-                        print("Blyat Extracted, Putin returning to comrads")
+        #for filelist in vals1[0]:
+        #    for file_id in filelist[0]:
+        #        for path_list in db.get_file_path(file_id)[0]:
+        #            for path_tuple in list:
+        #                for file_list in db.get_file_name(file_id)[0]:
+        #                    for file_tuple in file_list:
+        #                        print(path_tuple)
+        #                        print(file_tuple)
+        #                        #lib.Image.test.extract_file("ImageUSBSjors.dd.001", tuple, "raw", db.get_file_name(file_id), r"C:\Users\Gido Scherpenhuizen\Documents\OUTPUT")
+        #                        print("Blyat Extracted, Putin returning to comrads")
+        for file_id in vals1[0]:
+            filepath_list = db.get_file_path(file_id)
+            for filepath_from_filepath_list in filepath_list[0]:
+                file_name_list = db.get_file_name(file_id)
+                for file_name in file_name_list[0]:
+                    lib.Image.test.extract_file("ImageUSBSjors.dd.001", filepath_from_filepath_list, "raw", file_name, r"C:\Users\Gido Scherpenhuizen\Documents\OUTPUT")
+
 
 
     if vals1[0] == 'selected':
