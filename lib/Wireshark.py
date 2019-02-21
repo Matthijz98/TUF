@@ -7,6 +7,9 @@ Studentnummer:
 from scapy.all import rdpcap, Scapy_Exception
 import os.path
 
+# imports voor de GUI
+import PySimpleGUI as Sg
+
 
 # klasse Wrieshark aanmaken
 class Wireshark:
@@ -29,7 +32,7 @@ class Wireshark:
                 packets = rdpcap(filename)
 
                 # Hier worden het aantal packets getoond
-                print("Aantal packets:", len(packets))
+                Sg.Popup(f"Aantal packets: {len(packets)}", button_color=('black', 'yellow'))
 
                 # Hier wordt elke packet getoond
                 for packet in packets:
@@ -39,15 +42,15 @@ class Wireshark:
             # Dit vangt de error op om vervolgens een melding terug te geven
             except Scapy_Exception:
                 # hier wordt er een foutmelding getoond
-                print("Dit is geen Wireshark bestand.")
+                Sg.Popup("Dit is geen Wireshark bestand.", button_color=('black', 'yellow'))
             # Als het bestand niet bestaat ook een foutmelding teruggeven
             except FileNotFoundError:
                 # hier wordt er een foutmelding getoond
-                print("Dit is geen Wireshark bestand.")
+                Sg.Popup("Dit is geen Wireshark bestand.", button_color=('black', 'yellow'))
 
         # Als het niet de extensie .pcap heeft wordt er een melding teruggegeven
         else:
-            print("Dit is geen Wireshark bestand.")
+            Sg.Popup("Dit is geen Wireshark bestand.", button_color=('black', 'yellow'))
 
 
 # main uitvoeren
