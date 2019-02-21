@@ -10,8 +10,8 @@ treegoed = Sg.Tree(data=tree,
                    right_click_menu=['&Right', ['Extract', 'Upload to VirusTotal']],
                    pad=20)
 
-testbutton = Sg.Button(button_text="EXTRACT BLYAT")
 extract_button = Sg.Button(button_text="Extract")
+hash_button = Sg.Button(button_text="Hash file")
 
 folder_icon = b'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsSAAALEgHS3X78AAABnUlEQVQ4y8WSv2rUQRSFv7vZ\
 gJFFsQg2EkWb4AvEJ8hqKVilSmFn3iNvIAp21oIW9haihBRKiqwElMVsIJjNrprsOr/5dyzml3UhEQIWHhjmcpn7zblw4B9lJ8Xag9mlmQb3AJzX3tOX8\
@@ -59,7 +59,7 @@ for f in database:
 # Create a layout which is used for a window
 layout = [[Sg.Text('Welcome to Turtle Forensics!')],
           [treegoed],
-          [testbutton],
+          [hash_button],
           [extract_button]]
 
 
@@ -77,22 +77,20 @@ while True:
                 print(db.get_file_path(file))
 
     if ev1 == "Extract":
-        #for filelist in vals1[0]:
-        #    for file_id in filelist[0]:
-        #        for path_list in db.get_file_path(file_id)[0]:
-        #            for path_tuple in list:
-        #                for file_list in db.get_file_name(file_id)[0]:
-        #                    for file_tuple in file_list:
-        #                        print(path_tuple)
-        #                        print(file_tuple)
-        #                        #lib.Image.test.extract_file("ImageUSBSjors.dd.001", tuple, "raw", db.get_file_name(file_id), r"C:\Users\Gido Scherpenhuizen\Documents\OUTPUT")
-        #                        print("Blyat Extracted, Putin returning to comrads")
         for file_id in vals1[0]:
             filepath_list = db.get_file_path(file_id)
             for filepath_from_filepath_list in filepath_list[0]:
                 file_name_list = db.get_file_name(file_id)
                 for file_name in file_name_list[0]:
                     lib.Image.test.extract_file("ImageUSBSjors.dd.001", filepath_from_filepath_list, "raw", file_name, r"C:\Users\Gido Scherpenhuizen\Documents\OUTPUT")
+
+    if ev1 == "Hash file":
+        for file_id in vals1[0]:
+            hash_list = db.get_file_hash(file_id)
+            print(hash_list)
+            hash_tuple = hash_list[0]
+            text = "md5: " + hash_tuple[0] + "\n \n" + "sha256: " + hash_tuple[1] + "\n \n" + "sha1: " + hash_tuple[2]
+            Sg.Popup("File Hash", text)
 
 
 

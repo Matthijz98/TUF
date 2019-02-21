@@ -213,7 +213,11 @@ class Sqlite:
         return self.c.fetchall()
 
     def get_file_path(self, file_id):
-        self.c.execute("SELECT file_path from files WHERE files.file_id == '%s'" % file_id)
+        self.c.execute("SELECT file_path FROM files WHERE files.file_id == '%s'" % file_id)
+        return self.c.fetchall()
+
+    def get_file_hash(self, file_id):
+        self.c.execute("SELECT file_md5, file_sha256, file_sha1 FROM files WHERE files.file_id == '%s'" % file_id)
         return self.c.fetchall()
 
     def get_parent_key(self, name):
