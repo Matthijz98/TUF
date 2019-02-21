@@ -79,6 +79,7 @@ while True:
     if ev1 == "Extract":
         for file_id in vals1[0]:
             filepath_list = db.get_file_path(file_id)
+            print(filepath_list)
             for filepath_from_filepath_list in filepath_list[0]:
                 file_name_list = db.get_file_name(file_id)
                 for file_name in file_name_list[0]:
@@ -87,14 +88,11 @@ while True:
     if ev1 == "Hash file":
         for file_id in vals1[0]:
             hash_list = db.get_file_hash(file_id)
-            print(hash_list)
             hash_tuple = hash_list[0]
             text = "md5: " + hash_tuple[0] + "\n \n" + "sha256: " + hash_tuple[1] + "\n \n" + "sha1: " + hash_tuple[2]
             Sg.Popup("File Hash", text)
 
 
 
-    if vals1[0] == 'selected':
-        print("CLICKED")
 
 win1.Close()

@@ -38,12 +38,12 @@ def addtodb(db, partition_id, parent_key,  md5_hash, sha256_hash, sha1_hash, nam
     db.set_file(partition_id, parent_key,  md5_hash, sha256_hash, sha1_hash, name, create, modify, filepath, size, extension, f_type)
 
 
-imagelocation = pjoin("e01Image.E01")
+imagelocation = pjoin("ImageUSBSjors.dd.001")
 
 
 # Function to retreive data from a directory
 def getdirectorydata(db, change_dir, parent_key):
-    for f in test.main(imagelocation, "e01", change_dir):
+    for f in test.main(imagelocation, "raw", change_dir):
         if f[10] == "DIR":
             changedir = change_dir
             if f[4] != "." and f[4] != "..":
@@ -57,7 +57,7 @@ def getdirectorydata(db, change_dir, parent_key):
 
 # Function where the file and folder extraction starts
 def start(db):
-    for f in test.main(imagelocation, "e01"):
+    for f in test.main(imagelocation, "raw"):
         if f[10] == "DIR":
             if f[4] != "." and f[4] != "..":
                 addtodb(db, f[0], "", f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10])
