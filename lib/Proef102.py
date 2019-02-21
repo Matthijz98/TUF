@@ -81,6 +81,8 @@ while True:
             for file in filelist:
                 for list in db.get_file_path(file):
                     for tuple in list:
+                        print(list)
+                        print(tuple)
                         lib.Image.test.extract_file("ImageUSBSjors.dd.001", tuple, "raw", db.get_file_name(file), r"C:\Users\Gido Scherpenhuizen\Documents\OUTPUT")
                         print("Blyat Extracted, Putin returning to comrads")
 

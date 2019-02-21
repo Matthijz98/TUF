@@ -166,6 +166,6 @@ class test:
         volume = pytsk3.Volume_Info(imagehandle)
         file_system_object = pytsk3.FS_Info(imagehandle, 16384)
         file_object = file_system_object.open(filepath)
-        outfile = open(pjoin(savelocation + '/' + name), 'wb')
+        outfile = open(savelocation + '/' + name, 'wb')
         filedata = file_object.read_random(0, file_object.info.meta.size)
         outfile.write(filedata)
