@@ -112,8 +112,9 @@ while True:
             if ev2 == 'Create User' and loggedin is False:
                 created = db.check_username(vals2[0])
 
-                if username is None and password is None:
+                if username == "" or password == "":
                     Sg.Popup("Nein")
+                    ev2, vals2 = loginWindow.Read()
 
                 elif created is False:
                     db.set_user(username=vals2[0], password=vals2[1])
