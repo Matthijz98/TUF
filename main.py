@@ -157,6 +157,7 @@ while True:
                         # set the config option to the input given by the user
                         config.add_section("Virus total")
                         config['Virus total']['api key'] = virustotal_api
+                        db.log_item(title="Virus total API key opgeslagen", details="API key: " + virustotal_api)
                         # write the config file to config.ini
                         with open('config.ini', 'w') as configfile:
                             config.write(configfile)
@@ -216,7 +217,6 @@ while True:
                 while True:
                     if loggingWindow_active:
                         ev8, vals8 = loggingWindow.Read()
-
                         if ev8 == 'export to csv':
                             db.log2csv()
                             print("export")
@@ -283,8 +283,6 @@ while True:
                             treeviewWindow = Sg.Window('TUF - Treeview', icon='ICON.ico').Layout(layout7)
 
 
-
-
                             if treeviewWindow_active:
                                 ev7, vals7 = treeviewWindow.Read()
 
@@ -314,14 +312,17 @@ while True:
 
                             if ev7 == "Hash file":
                                 for file_id in vals1[0]:
+                                    db.log_item(title="File hashing started", details="File id: " + file_id, file_id=file_id)
                                     hash_list = db.get_file_hash(file_id)
                                     print(hash_list)
                                     hash_tuple = hash_list[0]
                                     text = "md5: " + hash_tuple[0] + "\n \n" + "sha256: " + hash_tuple[1] \
                                            + "\n \n" + "sha1: " + hash_tuple[2]
                                     Sg.Popup("File Hash", text)
+                                    db.log_item("File hash done", details="file: " + file_id + " hash:  " + text, file_id=file_id)
 
                             if ev7 == "Extract file":
+                                db.log_item(title="file extraction started", details="File id: " + vals1[0], file_id=vals1[0])
                                 for file_id in vals1[0]:
                                     filepath_list = db.get_file_path(file_id)
                                     for filepath_from_filepath_list in filepath_list[0]:
@@ -329,6 +330,7 @@ while True:
                                         for file_name in file_name_list[0]:
                                             Image.test.extract_file(image, filepath_from_filepath_list, "raw",
                                                             file_name, r"C:\Users\Gido Scherpenhuizen\Documents\OUTPUT")
+                                db.log_item(title="file extraction done", details="file id: " + file_id, file_id=file_id)
 
                 if ev5 is None:
                     break
