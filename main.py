@@ -5,6 +5,8 @@
 #######################
 ##
 # All the libraries that are being imported.
+# config parser to save settings in a config file
+import configparser
 # Import OS: allows the use of using the same path on multiple systems
 import os
 # Import PySimpleGUI: enables the use of the pysimplegui
@@ -18,10 +20,20 @@ from lib import Treeview
 
 from lib import Image
 
+virustotal_api = ""
+# make a config object
+config = configparser.ConfigParser()
+# open config
+config.read('config.ini')
+# check if the option is set in the config file
+if config.has_option("Virus total", "api key") is True:
+    # if there is a option load it from the file and use it
+    virustotal_api = config['Virus total']['api key']
+# the path where to programm is located
 path = os.path.dirname(os.path.realpath(__file__))
-print(path)
 name = 'database'
 db = ''
+# set the login state to False
 loggedin = False
 # the currently open case
 active_case = ''
@@ -137,12 +149,24 @@ while True:
                 ev3, vals3 = loggedWindow.Read()
                 # if the user pressed the button virustotal then it will execute the code beneath it
                 if ev3 == 'VirusTotal':
-                    vt = VirusTotal.VirusTotal(Sg.PopupGetText('Please enter your VirusTotal key: ', 'TUF - VirusTotal'))
+                    # check if api key is set
+                    if virustotal_api == "":
+                        # if not set ask the user
+                        virustotal_api = Sg.PopupGetText('Please provide a VirusTotal API key', 'VirusTotal api')
+                        # set the config option to the input given by the user
+                        config.add_section("Virus total")
+                        config['Virus total']['api key'] = virustotal_api
+                        # write the config file to config.ini
+                        with open('config.ini', 'w') as configfile:
+                            config.write(configfile)
+                    vt = VirusTotal.VirusTotal(virustotal_api)
                     # the chosen file will get send to virustotal
                     testfile = Sg.PopupGetFile('Which file would you like to check?', 'TUF - VirusTotal')
                     # functie test_file uitvoeren
                     # hier wordt de functie aangeroepen uit de klasse met de constructor
                     virustotal = vt.test_file(testfile)
+
+
 
                 if ev3 == 'Open Case':
                     active_case = cases[vals3[0][0]][0]
