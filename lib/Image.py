@@ -67,10 +67,13 @@ def start(db, image, imagetype):
         else:
             addtodb(db, f[0], "", f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10], f[11])
 
+
 class main:
     def main(imagefile, imagetype, change_dir=None):
         if imagetype == 'e01':
-            filenames = pyewf.glob(imagefile)
+            image = imagefile.rpartition("/")
+            filenames = pyewf.glob(image[2])
+            print(filenames)
             ewf_handle = pyewf.handle()
             ewf_handle.open(filenames)
 
@@ -84,14 +87,12 @@ class main:
         for partition in volume:
             if partition.len > 2048 and "Unallocated" not in partition.desc.decode('utf-8') and "Extendend" \
                     not in partition.desc.decode('utf-8') and "Primary Table" not in partition.desc.decode('utf-8'):
-                print(partition.addr)
                 try:
-                    filesystemObject = pytsk3.FS_Info(imagehandle, offset=partition.start * 512)
+                    filesystemObject = pytsk3.FS_Info(imagehandle, offset=partition.start * volume.info.block_size)
                 except IOError:
                     _, e, _ = sys.exc_info()
                     print("[-] Unable to open FS:\n {}".format(e))
 
-                filesystemObject = pytsk3.FS_Info(imagehandle, offset=partition.start * 512)
                 partition_id = partition.addr
                 partition_offset = partition.start * 512
                 # Open directory and change directory
@@ -119,6 +120,7 @@ class main:
                                 extension = name.rsplit(".")[-1].lower()
                             else:
                                 extension = ""
+
                     size = f.info.meta.size
                     f_size = getattr(f.info.meta, "size", 0)
                     if current_dir == "None":
@@ -144,9 +146,8 @@ class main:
                         sha1_hash = ""
                         sha256_hash = ""
                         md5_hash = ""
-
                     filelist.append([partition_id, md5_hash, sha256_hash, sha1_hash, name, create, modify, filepath,
-                                     size, extension, f_type, partition_offset])
+                             size, extension, f_type, partition_offset])
 
                     #if f_type == "FILE" and size > 0:
                     #    with open(pjoin(r"C:\Users\Gido Scherpenhuizen\Documents\OUTPUT", name), "wb") as outfile:
