@@ -272,8 +272,7 @@ while True:
 
                             treeview = Sg.Tree(data=data,
                                                headings=['partition_id', 'file_path', 'size', 'extension', 'file_type'],
-                                               def_col_width=50,
-                                               right_click_menu=['&Right', ['Extract', 'Upload to VirusTotal']])
+                                               def_col_width=50)
 
                             layout7 = [[Sg.Text('Welcome to Turtle Forensics!')],
                                        [treeview],
@@ -296,8 +295,7 @@ while True:
 
                             treeview = Sg.Tree(data=data,
                                                headings=['partition_id', 'file_path', 'size', 'extension', 'file_type'],
-                                               def_col_width=50,
-                                               right_click_menu=['&Right', ['Extract', 'Upload to VirusTotal']])
+                                               def_col_width=50)
 
                             layout7 = [[Sg.Text('Welcome to Turtle Forensics!')],
                                        [treeview],
@@ -308,29 +306,32 @@ while True:
 
 
                             if treeviewWindow_active:
-                                ev7, vals7 = treeviewWindow.Read()
+                                while True:
+                                    ev7, vals7 = treeviewWindow.Read()
 
-                            if ev7 == "Hash file":
-                                for file_id in vals1[0]:
-                                    db.log_item(title="File hashing started", details="File id: " + file_id, file_id=file_id)
-                                    hash_list = db.get_file_hash(file_id)
-                                    print(hash_list)
-                                    hash_tuple = hash_list[0]
-                                    text = "md5: " + hash_tuple[0] + "\n \n" + "sha256: " + hash_tuple[1] \
-                                           + "\n \n" + "sha1: " + hash_tuple[2]
-                                    Sg.Popup("File Hash", text)
-                                    db.log_item("File hash done", details="file: " + file_id + " hash:  " + text, file_id=file_id)
+                                    if ev7 == "Hash file":
+                                        file_id = vals7[0]
+                                        hash_list = db.get_file_hash(file_id[0])
+                                        hash_tuple = hash_list[0]
+                                        text = "md5: " + hash_tuple[0] + "\n \n" + "sha256: " + hash_tuple[1] + "\n \n" \
+                                               + "sha1: " + hash_tuple[2]
+                                        Sg.Popup("File Hash", text)
 
-                            if ev7 == "Extract file":
-                                db.log_item(title="file extraction started", details="File id: " + vals1[0], file_id=vals1[0])
-                                for file_id in vals1[0]:
-                                    filepath_list = db.get_file_path(file_id)
-                                    for filepath_from_filepath_list in filepath_list[0]:
-                                        file_name_list = db.get_file_name(file_id)
-                                        for file_name in file_name_list[0]:
-                                            Image.test.extract_file(image, filepath_from_filepath_list, "raw",
-                                                            file_name, r"C:\Users\Gido Scherpenhuizen\Documents\OUTPUT")
-                                db.log_item(title="file extraction done", details="file id: " + file_id, file_id=file_id)
+                                    if ev7 == "Extract file":
+                                        file_id = vals7[0]
+                                        file_size_list = db.get_file_size(file_id[0])
+                                        file_size = file_size_list[0]
+                                        if file_size > 0:
+                                            filepath_list = db.get_file_path(file_id[0])
+                                            partition_offset_list = db.get_partition_offset(file_id[0])
+                                            filepath_from_filepath_list = filepath_list[0]
+                                            file_name_list = db.get_file_name(file_id[0])
+                                            file_name = file_name_list[0]
+                                            Image.test.extract_file(image, filepath_from_filepath_list[0], "raw",
+                                                file_name[0],
+                                                    r"C:\Users\Gido Scherpenhuizen\Documents\OUTPUT", partition_offset_list[0])
+                                        else:
+                                            Sg.Popup("Extract", "File has no data")
 
                 if ev5 is None:
                     break

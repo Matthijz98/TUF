@@ -121,7 +121,10 @@ class test:
                                 extension = ""
                     size = f.info.meta.size
                     f_size = getattr(f.info.meta, "size", 0)
-                    filepath = current_dir + "/" + f.info.name.name.decode('utf-8')
+                    if current_dir == "None":
+                        filepath = "/" + f.info.name.name.decode('utf-8')
+                    else:
+                        filepath = "/" + current_dir + "/" + f.info.name.name.decode('utf-8')
                     create = datetime.datetime.fromtimestamp(f.info.meta.crtime).strftime('%Y-%m-%d %H:%M:%S')
                     modify = datetime.datetime.fromtimestamp(f.info.meta.mtime).strftime('%Y-%m-%d %H:%M:%S')
 
