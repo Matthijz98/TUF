@@ -43,7 +43,7 @@ def addtodb(db, partition_id, partition_offset, parent_key,  md5_hash, sha256_ha
 
 # Function to retreive data from a directory
 def getdirectorydata(db, image, change_dir, parent_key, imagetype):
-    for f in test.main(image, imagetype, change_dir):
+    for f in main.main(image, imagetype, change_dir):
         if f[10] == "DIR":
             changedir = change_dir
             if f[4] != "." and f[4] != "..":
@@ -57,7 +57,7 @@ def getdirectorydata(db, image, change_dir, parent_key, imagetype):
 
 # Function where the file and folder extraction starts
 def start(db, image, imagetype):
-    for f in test.main(image, imagetype):
+    for f in main.main(image, imagetype):
         if f[10] == "DIR":
             if f[4] != "." and f[4] != "..":
                 addtodb(db, f[0], "", f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10], f[11])
@@ -67,7 +67,7 @@ def start(db, image, imagetype):
         else:
             addtodb(db, f[0], "", f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10], f[11])
 
-class test:
+class main:
     def main(imagefile, imagetype, change_dir=None):
         if imagetype == 'e01':
             filenames = pyewf.glob(imagefile)
@@ -165,9 +165,12 @@ class test:
             imagehandle = ewf_Img_Info(ewf_handle)
         elif imagetype == 'raw':
             imagehandle = pytsk3.Img_Info(image)
-        volume = pytsk3.Volume_Info(imagehandle)
         file_system_object = pytsk3.FS_Info(imagehandle, partition_offset)
         file_object = file_system_object.open(filepath)
-        outfile = open(pjoin(savelocation, name), 'wb')
+        output_filepath = pjoin(savelocation, name)
+        outfile = open(output_filepath, 'wb')
         filedata = file_object.read_random(0, file_object.info.meta.size)
         outfile.write(filedata)
+
+        def returnpath():
+            return output_filepath

@@ -71,6 +71,7 @@ class VirusTotal:
                                 params=params)
         json_response = response.json()
 
+        print(json_response)
         return json_response
 
     # hier wordt het bestand geupload naar virustotal
@@ -102,7 +103,7 @@ class VirusTotal:
             Sg.Popup(f"{response_hash['results']['verbose_msg']}.\n\nHet bestand wordt nu geüpload.",
                      button_color=('black', 'yellow'))
 
-            file_upload = self.upload_file(testfile)
+            file_upload = self.upload_file(filename)
             return self.get_report(file_upload)
 
         # als de gebruiker nog een keer het bestand upload,

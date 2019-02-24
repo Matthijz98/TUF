@@ -111,6 +111,10 @@ while True:
             # and keep repeating the same window until he creates a new user or logs in
             if ev2 == 'Create User' and loggedin is False:
                 created = db.check_username(vals2[0])
+                username = vals2[0]
+                password = vals2[1]
+                print(username, password)
+                print(vals2[0], vals2[1])
 
                 if username == "" or password == "":
                     Sg.Popup("Nein")
@@ -263,6 +267,7 @@ while True:
                     # to open up
                     if ev5 == 'Save':
                         if vals5['E01']:
+                            imageformat = "e01"
                             treeviewWindow_active = True
                             createCaseWindow2_active = False
                             createCaseWindow2.Hide()
@@ -277,7 +282,8 @@ while True:
                             layout7 = [[Sg.Text('Welcome to Turtle Forensics!')],
                                        [treeview],
                                        [Sg.Button("Hash file")],
-                                       [Sg.Button("Extract file")]]
+                                       [Sg.Button("Extract file")],
+                                       [Sg.Button("Send to Virustotal")]]
 
                             treeviewWindow = Sg.Window('TUF - Treeview', icon='ICON.ico').Layout(layout7)
 
@@ -286,6 +292,7 @@ while True:
                                 ev7, vals7 = treeviewWindow.Read()
 
                         if vals5['RAW']:
+                            imageformat = "raw"
                             treeviewWindow_active = True
                             createCaseWindow2_active = False
                             createCaseWindow2.Hide()
@@ -300,10 +307,10 @@ while True:
                             layout7 = [[Sg.Text('Welcome to Turtle Forensics!')],
                                        [treeview],
                                        [Sg.Button("Hash file")],
-                                       [Sg.Button("Extract file")]]
+                                       [Sg.Button("Extract file")],
+                                       [Sg.Button("Send to Virustotal")]]
 
                             treeviewWindow = Sg.Window('TUF - Treeview', icon='ICON.ico').Layout(layout7)
-
 
                             if treeviewWindow_active:
                                 while True:
@@ -327,11 +334,54 @@ while True:
                                             filepath_from_filepath_list = filepath_list[0]
                                             file_name_list = db.get_file_name(file_id[0])
                                             file_name = file_name_list[0]
-                                            Image.test.extract_file(image, filepath_from_filepath_list[0], "raw",
-                                                file_name[0],
-                                                    r"C:\Users\Gido Scherpenhuizen\Documents\OUTPUT", partition_offset_list[0])
+                                            if imageformat == 'e01':
+                                                Image.main.extract_file(image, filepath_from_filepath_list[0], "e01",
+                                                    file_name[0], path, partition_offset_list[0])
+                                            elif imageformat == 'raw':
+                                                Image.main.extract_file(image, filepath_from_filepath_list[0], "raw",
+                                                    file_name[0], path, partition_offset_list[0])
                                         else:
                                             Sg.Popup("Extract", "File has no data")
+
+                                    if ev7 == "Send to Virustotal":
+                                        # check if api key is set
+                                        if virustotal_api == "":
+                                            # if not set ask the user
+                                            virustotal_api = Sg.PopupGetText('Please provide a VirusTotal API key',
+                                                                             'VirusTotal api')
+                                            # set the config option to the input given by the user
+                                            config.add_section("Virus total")
+                                            config['Virus total']['api key'] = virustotal_api
+                                            db.log_item(title="Virus total API key opgeslagen",
+                                                        details="API key: " + virustotal_api)
+                                            # write the config file to config.ini
+                                            with open('config.ini', 'w') as configfile:
+                                                config.write(configfile)
+                                        # get the file_id so the file can be extracted
+                                        file_id = vals7[0]
+                                        # Extract the file, same as previous window
+                                        file_size_list = db.get_file_size(file_id[0])
+                                        file_size = file_size_list[0]
+                                        if file_size > 0:
+                                            filepath_list = db.get_file_path(file_id[0])
+                                            partition_offset_list = db.get_partition_offset(file_id[0])
+                                            filepath_from_filepath_list = filepath_list[0]
+                                            file_name_list = db.get_file_name(file_id[0])
+                                            file_name = file_name_list[0]
+                                            if imageformat == 'e01':
+                                                Image.main.extract_file(image, filepath_from_filepath_list[0], "e01",
+                                                    file_name[0], path, partition_offset_list[0])
+                                            elif imageformat == 'raw':
+                                                Image.main.extract_file(image, filepath_from_filepath_list[0], "raw",
+                                                    file_name[0], path, partition_offset_list[0])
+
+                                        vt = VirusTotal.VirusTotal(virustotal_api)
+                                        # the chosen file will get send to virustotal
+                                        #output_filepath = os.path.join(path, file_name[0])
+                                        testfile = os.path.join(path, file_name[0])
+                                        # functie test_file uitvoeren
+                                        # hier wordt de functie aangeroepen uit de klasse met de constructor
+                                        virustotal = vt.test_file(testfile)
 
                 if ev5 is None:
                     break
