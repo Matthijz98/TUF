@@ -15,6 +15,8 @@ import PySimpleGUI as Sg
 from lib import Sqlite
 # Imports the script VirusTotal from the directory 'lib' into the main.py script which enables the use of virustotal
 from lib import VirusTotal
+# Imports the script Wireshark from the directory 'lib' into the main.py script which enables the use of wireshark
+from lib import Wireshark
 # Imports the script Treeview from the directory 'lib' into the main.py script which enables the use of the treeview
 from lib import Treeview
 
@@ -167,10 +169,10 @@ while True:
                             config.write(configfile)
                     vt = VirusTotal.VirusTotal(virustotal_api)
                     # the chosen file will get send to virustotal
-                    testfile = Sg.PopupGetFile('Which file would you like to check?', 'TUF - VirusTotal')
+                    #testfile = Sg.PopupGetFile('Which file would you like to check?', 'TUF - VirusTotal')
                     # functie test_file uitvoeren
                     # hier wordt de functie aangeroepen uit de klasse met de constructor
-                    virustotal = vt.test_file(testfile)
+                    #virustotal = vt.test_file(testfile)
 
 
 
@@ -283,7 +285,8 @@ while True:
                                        [treeview],
                                        [Sg.Button("Hash file")],
                                        [Sg.Button("Extract file")],
-                                       [Sg.Button("Send to Virustotal")]]
+                                       [Sg.Button("Send to Virustotal")],
+                                       [Sg.Button("Wireshark")]]
 
                             treeviewWindow = Sg.Window('TUF - Treeview', icon='ICON.ico').Layout(layout7)
 
@@ -308,7 +311,8 @@ while True:
                                        [treeview],
                                        [Sg.Button("Hash file")],
                                        [Sg.Button("Extract file")],
-                                       [Sg.Button("Send to Virustotal")]]
+                                       [Sg.Button("Send to Virustotal")],
+                                       [Sg.Button("Wireshark")]]
 
                             treeviewWindow = Sg.Window('TUF - Treeview', icon='ICON.ico').Layout(layout7)
 
@@ -382,6 +386,29 @@ while True:
                                         # functie test_file uitvoeren
                                         # hier wordt de functie aangeroepen uit de klasse met de constructor
                                         virustotal = vt.test_file(testfile)
+
+                                    if ev7 == "Wireshark":
+                                        # get the file_id so the file can be extracted
+                                        file_id = vals7[0]
+                                        # Extract the file, same as previous window
+                                        file_size_list = db.get_file_size(file_id[0])
+                                        file_size = file_size_list[0]
+                                        if file_size > 0:
+                                            filepath_list = db.get_file_path(file_id[0])
+                                            partition_offset_list = db.get_partition_offset(file_id[0])
+                                            filepath_from_filepath_list = filepath_list[0]
+                                            file_name_list = db.get_file_name(file_id[0])
+                                            file_name = file_name_list[0]
+                                            if imageformat == 'e01':
+                                                Image.main.extract_file(image, filepath_from_filepath_list[0], "e01",
+                                                                        file_name[0], path, partition_offset_list[0])
+                                            elif imageformat == 'raw':
+                                                Image.main.extract_file(image, filepath_from_filepath_list[0], "raw",
+                                                                        file_name[0], path, partition_offset_list[0])
+
+                                        wireshark = Wireshark.Wireshark
+                                        filename = os.path.join(path, file_name[0])
+                                        wireshark.main(filename)
 
                 if ev5 is None:
                     break
