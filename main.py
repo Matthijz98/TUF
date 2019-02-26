@@ -406,10 +406,9 @@ while True:
                                                 Image.main.extract_file(image, filepath_from_filepath_list[0], "raw",
                                                                         file_name[0], path, partition_offset_list[0])
 
-                                            wireshark = Wireshark.Wireshark
-                                            filename = path + "/"+ file_name[0]
-                                            wireshark.w(filename)
+                                            filename = path + "/" + file_name[0]
 
+                                            Wireshark.wireshark(filename)
 
                 if ev5 is None:
                     break
