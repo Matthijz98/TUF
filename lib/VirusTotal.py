@@ -53,12 +53,12 @@ class VirusTotal:
             print("Er gaat iets fout met het lezen van het bestand.")
 
     # Met deze functie wordt de hashwaarde verstuurt naar VirusTotal
-    def send_hash(self, hashing):
+    def send_hash(self, filehash):
         # De PublicApi wordt doorgegeven aan api
         api = PublicApi(self.api)
 
         # response terugvragen van virustotal
-        response = api.get_file_report(hashing)
+        response = api.get_file_report(filehash)
         return response
 
     # hier wordt het rapport opgehaald als er een bestand wordt geüpload
@@ -71,7 +71,6 @@ class VirusTotal:
                                 params=params)
         json_response = response.json()
 
-        print(json_response)
         return json_response
 
     # hier wordt het bestand geupload naar virustotal
@@ -91,10 +90,13 @@ class VirusTotal:
 
     # hier wordt het bestand daadwerkelijk geupload als de hash niet wordt herkend
     def test_file(self, filename):
+        #print(filename)
         # hash toekennen aan filehash
         filehash = self.hash_file(filename)
+        #print(f"filehash {filehash}")
         # verkrijgen van response van de hash upload
         response_hash = self.send_hash(filehash)
+        #print(f"response {response_hash}")
 
         # kijken of de hashwaarde wordt herkend door VirusTotal
         if response_hash['results']['response_code'] == 0:
@@ -125,8 +127,9 @@ class VirusTotal:
 if __name__ == '__main__':
     # api key meegeven
     # klasse aanmaken van VirusTotal
-    vt = VirusTotal('api_key meegeven')
+    vt = VirusTotal('api key')
 
     # bestand selecteren
-    testfile = "test_bestand invoeren"
+    testfile = "bestandspad"
 
+    vt.test_file(testfile)
