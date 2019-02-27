@@ -4,7 +4,7 @@ Studentnummer:
 """
 
 # Van de library scapy rdpcap en scapy_exception importeren
-from scapy.all import rdpcap, Scapy_Exception, ls, raw, hexdump
+from scapy.all import rdpcap, Scapy_Exception
 import os.path
 
 # imports voor de GUI
@@ -14,12 +14,8 @@ import PySimpleGUI as Sg
 # klasse Wrieshark aanmaken
 class Wireshark:
 
-    # constructor aanmaken
-    def __init__(self):
-        self
-
-    # main functie aanmaken
-    def wireshark(self, filename):
+    # functie aanmaken waarmee een packet wordt omgezet naar array om uit te kunnen lezen
+    def packet_to_array(self, filename):
         # het bestand splitsen om de extensie te checken
         name, ext = os.path.splitext(filename)
 
@@ -28,6 +24,7 @@ class Wireshark:
 
             # Een try om te kijken of het wel een wireshark bestand is
             try:
+
                 # rdpcap importeren van scapy. Dit laadt de file in.
                 # hier wordt ook het bestand meegegeven
                 packets = rdpcap(filename)
@@ -35,15 +32,23 @@ class Wireshark:
                 # Hier worden het aantal packets getoond
                 Sg.Popup(f"Aantal packets: {len(packets)}", button_color=('black', 'yellow'))
 
-                # Hier wordt elke packet getoond
+                # tuple aanmaken zodat die gevuld kan worden met packets
+                packets_tuple = ()
+
+                # voor elke packet moeten tekens (unicode) worden vervangen
                 for packet in packets:
-                    packets.show()
-                    break
+                    replace_unicode = (packet.summary().replace(';', '')#.replace('"', '"').replace('/', '/')
+                                       .replace('  ', ' '),)
+                    # alles weer bij elkaar voegen
+                    packets_tuple = packets_tuple + (replace_unicode,)
+                # tuples returnen
+                return packets_tuple
 
             # Dit vangt de error op om vervolgens een melding terug te geven
             except Scapy_Exception:
                 # hier wordt er een foutmelding getoond
                 Sg.Popup("Dit is geen Wireshark bestand.", button_color=('black', 'yellow'))
+
             # Als het bestand niet bestaat ook een foutmelding teruggeven
             except FileNotFoundError:
                 # hier wordt er een foutmelding getoond
@@ -53,16 +58,11 @@ class Wireshark:
         else:
             Sg.Popup("Dit is geen Wireshark bestand.", button_color=('black', 'yellow'))
 
-    def packet2array(self, filename):
-        # hier wordt de functie aangeroepen uit de klasse met de constructor
-        a = rdpcap(filename)
-        x = ()
-        for packet in a:
-            y = (packet.summary().replace(';', '').replace('"', '').replace('/', '').replace('  ', ' '),)
-            x = x + (y,)
-        return x
 
 # main uitvoeren
 if __name__ == '__main__':
+    # klasse aanmaken van Wireshark
     Wireshark = Wireshark()
-    print(Wireshark.packet2array("C:/Users/mzond/Desktop/DEV/TUF/example.pcap"))
+
+    # functie uitvoeren
+    Wireshark.packet_to_array("testbestand")

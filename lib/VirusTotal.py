@@ -90,13 +90,11 @@ class VirusTotal:
 
     # hier wordt het bestand daadwerkelijk geupload als de hash niet wordt herkend
     def test_file(self, filename):
-        #print(filename)
         # hash toekennen aan filehash
         filehash = self.hash_file(filename)
-        #print(f"filehash {filehash}")
+
         # verkrijgen van response van de hash upload
         response_hash = self.send_hash(filehash)
-        #print(f"response {response_hash}")
 
         # kijken of de hashwaarde wordt herkend door VirusTotal
         if response_hash['results']['response_code'] == 0:
@@ -132,4 +130,5 @@ if __name__ == '__main__':
     # bestand selecteren
     testfile = "bestandspad"
 
+    # functie test_file uitvoeren
     vt.test_file(testfile)

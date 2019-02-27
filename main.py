@@ -391,27 +391,52 @@ while True:
                                             virustotal = vt.test_file(testfile)
 
                                     if ev7 == "Wireshark":
-                                        show_wireshark = Wireshark()
+                                        # get the file_id so the file can be extracted
+                                        file_id = vals7[0]
+                                        # Extract the file, same as previous window
+                                        file_size_list = db.get_file_size(file_id[0])
+                                        file_size = file_size_list[0]
+                                        if file_size > 0:
+                                            filepath_list = db.get_file_path(file_id[0])
+                                            partition_offset_list = db.get_partition_offset(file_id[0])
+                                            filepath_from_filepath_list = filepath_list[0]
+                                            file_name_list = db.get_file_name(file_id[0])
+                                            file_name = file_name_list[0]
+                                            if imageformat == 'e01':
+                                                Image.main.extract_file(image, filepath_from_filepath_list[0], "e01",
+                                                                        file_name[0], path, partition_offset_list[0])
+                                            elif imageformat == 'raw':
+                                                Image.main.extract_file(image, filepath_from_filepath_list[0], "raw",
+                                                                        file_name[0], path, partition_offset_list[0])
 
-                                        wiresharkdata = show_wireshark.packet2array(
-                                            "C:/Users/mzond/Desktop/DEV/TUF/example.pcap")
+                                            # object aanmaken
+                                            show_wireshark = Wireshark()
 
-                                        print(wiresharkdata)
-                                        table = Sg.Table(wiresharkdata,
-                                                         headings=["                 packet                 "],
-                                                         justification='Left',
-                                                         )
-                                        # hides the window loginWindow
-                                        # The layout of the window is created with the 'layout' variable
-                                        layout10 = [[Sg.T(' ' * 20), Sg.Text('Welcome to Turtle Forensics!')],
-                                                    [Sg.Text('', key='OUTPUT')],
-                                                    [Sg.Text('This are all the packkets in the pcap file')],
-                                                    [table],
-                                                    [Sg.Button('Ga terug')]]
-                                        # Giving the window the variable layout
-                                        wireshark_window = Sg.Window('TUF - Turtle Forensics', icon='ICON.ico').Layout(
-                                            layout10)
-                                        ev10, vals10 = wireshark_window.Read()
+                                            # bestand selecteren
+                                            wireshark_export = path + "/" + file_name[0]
+
+                                            # functie aanroepen
+                                            wireshark_data = show_wireshark.packet_to_array(wireshark_export)
+                                            
+                                            name, ext = os.path.splitext(wireshark_export)
+
+                                            if ext == '.pcap':
+
+                                                table = Sg.Table(wireshark_data,
+                                                                 headings=[f"{' ' * 25} packet {' ' * 25}"],
+                                                                 justification='Left',
+                                                                 )
+                                                # hides the window loginWindow
+                                                # The layout of the window is created with the 'layout' variable
+                                                layout10 = [[Sg.T(' ' * 20), Sg.Text('Welcome to Turtle Forensics!')],
+                                                            [Sg.Text('', key='OUTPUT')],
+                                                            [Sg.Text('This are all the packets in the PCAP file')],
+                                                            [table],
+                                                            [Sg.Button('Ga terug')]]
+                                                # Giving the window the variable layout
+                                                wireshark_window = Sg.Window('TUF - Turtle Forensics', icon='ICON.ico').Layout(
+                                                    layout10)
+                                                ev10, vals10 = wireshark_window.Read()
 
                 if ev5 is None:
                     break
