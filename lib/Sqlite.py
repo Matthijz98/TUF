@@ -66,8 +66,8 @@ class Sqlite:
                        'evidence_id integer NULL, '
                        'user_id integer NULL,'
                        'session_id integer NULL, '
-                       'case_id integer NULL, '
-                       'date_time text, '
+                       'case_id integer NULL, e'
+                       ' text, '
                        'title text NULL, '
                        'details text NULL, '
                        'FOREIGN KEY (evidence_id) REFERENCES evidences(evidence_id), '
@@ -114,11 +114,8 @@ class Sqlite:
                        'FOREIGN KEY (file_id) REFERENCES files(file_id))')
         # commit all changes to the database
         self.conn.commit()
-        # close connection to the database
-
-    # check the database if it has the right tabels
-    def check_database(self):
-        return
+        # log the creation of the database to the new database
+        self.log_item(title="the database has been created")
 
     #############################
     # all log related functions
@@ -232,6 +229,8 @@ class Sqlite:
         # build and run the insert query
         self.c.executemany('INSERT INTO files (partition_id, file_md5, file_sha256, file_sha1, title, date_created, date_last_modified, file_path, size, extention, file_type) '
                            'VALUES (? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,?)', (values))
+        # log the creation of the files
+        self.log_item(title="new files are created", details="a new file has been created")
         # save the changes made
         self.conn.commit()
 
@@ -240,6 +239,8 @@ class Sqlite:
                            'VALUES (? ,? ,? ,? ,? ,? ,? ,? ,? ,? ,?, ?, ?)', (partition_id, file_parrent, file_md5, file_sha256, file_sha1, title, date_created, date_last_modified, file_path, size, extention, file_type, partition_offset))
         # save the changes made
         self.conn.commit()
+        # log to creation of the file
+        self.log_item(title="new file has been made", details="filename: " + title + "sha1: " + file_sha1)
 
     # get all files
     def get_files(self):
@@ -298,15 +299,24 @@ class Sqlite:
         # check if the results are none
         if result is None:
             # return false because no user is found
+            self.log_item(user_id=self.get_user_id(username), title="user false login", details="user name: " + username + " tryed to log in but the user name is not found")
             return False
         if result is not None:
             # check if the hash form the password given is the same as the password hash in the database
             if self.hashlib.sha1(self.salt.encode('utf-8') + password.encode('utf-8')).hexdigest() == result[2]:
                 # return true if the passwords match
+                self.log_item(user_id=self.get_user_id(username), title="user login",
+                              details="user name: " + str(username))
                 return True
             else:
                 # return false if the passwords do not match
+                self.log_item(user_id=self.get_user_id(username), title="user false login",
+                              details="user name: " + username + " tryed to login but the password was not correct")
                 return False
+
+    def get_user_id(self, username):
+        self.c.execute("SELECT user_id FROM users WHERE user_id = '%s'" % username)
+        return self.c.fetchone();
 
     # update the password from a user only if the old password is correct
     def update_password(self, old_password, new_password, username):
@@ -314,12 +324,15 @@ class Sqlite:
         if self.check_user(username, old_password) is True:
             # build and run the update query and update the password using the username
             self.c.execute("UPDATE users SET password = %s WHERE users.user_name = '%s'" % new_password % username)
-            # return true if the query worked
-            return True
+            self.log_item(user_id=self.get_user_id(username), title=username + " updated his password")
             # save the changes made
             self.conn.commit
+            # return true if the query worked
+            return True
         else:
             # if the old password is not correct return false
+            self.log_item(user_id=self.get_user_id(username), title=username + " tryed updated his password",
+                          details="old password was not correct")
             return False
 
     # get all users without the passwords of cource ;)
@@ -366,6 +379,8 @@ class Sqlite:
         # save the changes made
         self.conn.commit()
 
+        self.log_item(title="new bookmark for " + self.get_file_name(file_id), file_id=file_id,
+                      details="title: " + title + " description " + description)
     # get all bookmarks form a case
     def get_case_bookmarks(self, case_id):
         # build and run the select query

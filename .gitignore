@@ -4,3 +4,4 @@ database.db
 vcs.xml
 *.pyc
 database\.db
+*.ini

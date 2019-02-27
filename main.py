@@ -72,7 +72,10 @@ while True:
         if path != vals1[0]:
             path = vals1[0]
         db = Sqlite.Sqlite(path, name)
-        db.setup_database()
+        exists = os.path.isfile(path + name)
+        if not exists:
+            # Store configuration file values
+            db.setup_database()
     # If the 'Yes' button is pushed the program is going to activate the 2nd window and hide the previous window.
     if not loginWindow_active and ev1 == 'Yes':
         loginWindow_active = True
@@ -115,11 +118,9 @@ while True:
                 created = db.check_username(vals2[0])
                 username = vals2[0]
                 password = vals2[1]
-                print(username, password)
-                print(vals2[0], vals2[1])
 
                 if username == "" or password == "":
-                    Sg.Popup("Nein")
+                    Sg.Popup("The username or password field can not be empty")
                     ev2, vals2 = loginWindow.Read()
 
                 elif created is False:
@@ -152,6 +153,7 @@ while True:
         loggedWindow = Sg.Window('TUF - Turtle Forensics', icon='ICON.ico').Layout(layout3)
 
         while True:
+            print("test")
             if loggedWindow_active:
                 ev3, vals3 = loggedWindow.Read()
                 # if the user pressed the button virustotal then it will execute the code beneath it
