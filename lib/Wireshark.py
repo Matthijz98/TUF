@@ -63,4 +63,5 @@ class Wireshark:
 
 # main uitvoeren
 if __name__ == '__main__':
-    print("test")
+    Wireshark = Wireshark()
+    print(Wireshark.packet2array("bestanspad"))

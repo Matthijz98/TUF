@@ -411,12 +411,12 @@ while True:
 
                                             filename = path + "/" + file_name[0]
 
-                                            wirescharkdata = Wireshark.packet2array(filename)
+                                            show_wireshark = Wireshark()
 
-                                            loggingWindow_active = True
-                                            loggedWindow_active = False
-                                            loggedWindow.Hide()
-                                            table = Sg.Table(logs,
+                                            wiresharkdata = show_wireshark.packet2array("bestandspad")
+
+
+                                            table = Sg.Table(wiresharkdata,
                                                              headings=["packet"],
                                                              enable_events=True)
                                             # hides the window loginWindow
@@ -427,7 +427,8 @@ while True:
                                                        [table],
                                                        [Sg.Button('Ga terug')]]
                                             # Giving the window the variable layout
-                                            loggingWindow = Sg.Window('TUF - Turtle Forensics', icon='ICON.ico').Layout(layout10)
+                                            wireshark_window = Sg.Window('TUF - Turtle Forensics', icon='ICON.ico').Layout(layout10)
+                                            wireshark_window.Read()
 
                 if ev5 is None:
                     break
