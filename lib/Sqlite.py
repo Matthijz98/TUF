@@ -305,7 +305,7 @@ class Sqlite:
             # check if the hash form the password given is the same as the password hash in the database
             if self.hashlib.sha1(self.salt.encode('utf-8') + password.encode('utf-8')).hexdigest() == result[2]:
                 # return true if the passwords match
-                self.log_item(user_id=self.get_user_id(username), title="user login",
+                self.log_item(user_id=int(self.get_user_id(username)), title="user login",
                               details="user name: " + str(username))
                 return True
             else:
@@ -316,7 +316,7 @@ class Sqlite:
 
     def get_user_id(self, username):
         self.c.execute("SELECT user_id FROM users WHERE user_id = '%s'" % username)
-        return self.c.fetchone();
+        return self.c.fetchone()[0]
 
     # update the password from a user only if the old password is correct
     def update_password(self, old_password, new_password, username):
