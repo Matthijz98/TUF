@@ -56,12 +56,13 @@ class Wireshark:
     def packet2array(self, filename):
         # hier wordt de functie aangeroepen uit de klasse met de constructor
         a = rdpcap(filename)
-        x = []
+        x = ()
         for packet in a:
-            x.append(str(packet.summary()))
+            y = (packet.summary().replace(';', '').replace('"', '').replace('/', '').replace('  ', ' '),)
+            x = x + (y,)
         return x
 
 # main uitvoeren
 if __name__ == '__main__':
     Wireshark = Wireshark()
-    print(Wireshark.packet2array("bestanspad"))
+    print(Wireshark.packet2array("C:/Users/mzond/Desktop/DEV/TUF/example.pcap"))

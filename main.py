@@ -72,7 +72,7 @@ while True:
         if path != vals1[0]:
             path = vals1[0]
         db = Sqlite.Sqlite(path, name)
-        exists = os.path.isfile(path + name)
+        exists = os.path.isfile(path + '/' + name + ".db")
         if not exists:
             # Store configuration file values
             db.setup_database()
@@ -153,7 +153,6 @@ while True:
         loggedWindow = Sg.Window('TUF - Turtle Forensics', icon='ICON.ico').Layout(layout3)
 
         while True:
-            print("test")
             if loggedWindow_active:
                 ev3, vals3 = loggedWindow.Read()
                 # if the user pressed the button virustotal then it will execute the code beneath it
@@ -208,6 +207,7 @@ while True:
                 loggingWindow_active = True
                 loggedWindow_active = False
                 loggedWindow.Hide()
+
                 logs = db.get_log_items()
                 table = Sg.Table(logs,
                                  headings=["log id", "evidence_id", "user_id", "session_id", "case_id", "date_time", "title", "details"],
@@ -391,44 +391,27 @@ while True:
                                             virustotal = vt.test_file(testfile)
 
                                     if ev7 == "Wireshark":
-                                        # get the file_id so the file can be extracted
-                                        file_id = vals7[0]
-                                        # Extract the file, same as previous window
-                                        file_size_list = db.get_file_size(file_id[0])
-                                        file_size = file_size_list[0]
-                                        if file_size > 0:
-                                            filepath_list = db.get_file_path(file_id[0])
-                                            partition_offset_list = db.get_partition_offset(file_id[0])
-                                            filepath_from_filepath_list = filepath_list[0]
-                                            file_name_list = db.get_file_name(file_id[0])
-                                            file_name = file_name_list[0]
-                                            if imageformat == 'e01':
-                                                Image.main.extract_file(image, filepath_from_filepath_list[0], "e01",
-                                                                        file_name[0], path, partition_offset_list[0])
-                                            elif imageformat == 'raw':
-                                                Image.main.extract_file(image, filepath_from_filepath_list[0], "raw",
-                                                                        file_name[0], path, partition_offset_list[0])
+                                        show_wireshark = Wireshark()
 
-                                            filename = path + "/" + file_name[0]
+                                        wiresharkdata = show_wireshark.packet2array(
+                                            "C:/Users/mzond/Desktop/DEV/TUF/example.pcap")
 
-                                            show_wireshark = Wireshark()
-
-                                            wiresharkdata = show_wireshark.packet2array("bestandspad")
-
-
-                                            table = Sg.Table(wiresharkdata,
-                                                             headings=["packet"],
-                                                             enable_events=True)
-                                            # hides the window loginWindow
-                                            # The layout of the window is created with the 'layout' variable
-                                            layout10 = [[Sg.T(' ' * 20), Sg.Text('Welcome to Turtle Forensics!')],
-                                                       [Sg.Text('', key='OUTPUT')],
-                                                       [Sg.Text('This are all the packkets in the pcap file')],
-                                                       [table],
-                                                       [Sg.Button('Ga terug')]]
-                                            # Giving the window the variable layout
-                                            wireshark_window = Sg.Window('TUF - Turtle Forensics', icon='ICON.ico').Layout(layout10)
-                                            wireshark_window.Read()
+                                        print(wiresharkdata)
+                                        table = Sg.Table(wiresharkdata,
+                                                         headings=["                 packet                 "],
+                                                         justification='Left',
+                                                         )
+                                        # hides the window loginWindow
+                                        # The layout of the window is created with the 'layout' variable
+                                        layout10 = [[Sg.T(' ' * 20), Sg.Text('Welcome to Turtle Forensics!')],
+                                                    [Sg.Text('', key='OUTPUT')],
+                                                    [Sg.Text('This are all the packkets in the pcap file')],
+                                                    [table],
+                                                    [Sg.Button('Ga terug')]]
+                                        # Giving the window the variable layout
+                                        wireshark_window = Sg.Window('TUF - Turtle Forensics', icon='ICON.ico').Layout(
+                                            layout10)
+                                        ev10, vals10 = wireshark_window.Read()
 
                 if ev5 is None:
                     break
