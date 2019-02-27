@@ -410,10 +410,24 @@ while True:
                                                                         file_name[0], path, partition_offset_list[0])
 
                                             filename = path + "/" + file_name[0]
-                                            # make object of Wireshark()
-                                            show_wireshark = Wireshark()
-                                            # run the function
-                                            show_wireshark.wireshark(filename)
+
+                                            wirescharkdata = Wireshark.packet2array(filename)
+
+                                            loggingWindow_active = True
+                                            loggedWindow_active = False
+                                            loggedWindow.Hide()
+                                            table = Sg.Table(logs,
+                                                             headings=["packet"],
+                                                             enable_events=True)
+                                            # hides the window loginWindow
+                                            # The layout of the window is created with the 'layout' variable
+                                            layout10 = [[Sg.T(' ' * 20), Sg.Text('Welcome to Turtle Forensics!')],
+                                                       [Sg.Text('', key='OUTPUT')],
+                                                       [Sg.Text('This are all the packkets in the pcap file')],
+                                                       [table],
+                                                       [Sg.Button('Ga terug')]]
+                                            # Giving the window the variable layout
+                                            loggingWindow = Sg.Window('TUF - Turtle Forensics', icon='ICON.ico').Layout(layout10)
 
                 if ev5 is None:
                     break

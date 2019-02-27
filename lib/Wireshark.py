@@ -4,7 +4,7 @@ Studentnummer:
 """
 
 # Van de library scapy rdpcap en scapy_exception importeren
-from scapy.all import rdpcap, Scapy_Exception
+from scapy.all import rdpcap, Scapy_Exception, ls, raw, hexdump
 import os.path
 
 # imports voor de GUI
@@ -53,11 +53,14 @@ class Wireshark:
         else:
             Sg.Popup("Dit is geen Wireshark bestand.", button_color=('black', 'yellow'))
 
+    def packet2array(self, filename):
+        # hier wordt de functie aangeroepen uit de klasse met de constructor
+        a = rdpcap(filename)
+        x = []
+        for packet in a:
+            x.append(str(packet.summary()))
+        return x
 
 # main uitvoeren
 if __name__ == '__main__':
-    # klasse aanmaken van Wireshark
-    show_wireshark = Wireshark()
-
-    # hier wordt de functie aangeroepen uit de klasse met de constructor
-    show_wireshark.wireshark("bestandspad invoeren")
+    print("test")
