@@ -19,12 +19,13 @@ class Wireshark:
         self
 
     # main functie aanmaken
-    def main(self, filename):
+    def wireshark(self, filename):
         # het bestand splitsen om de extensie te checken
         name, ext = os.path.splitext(filename)
 
         # als het een .pcap extensie heeft moet de code uitgevoerd worden
         if ext == '.pcap':
+
             # Een try om te kijken of het wel een wireshark bestand is
             try:
                 # rdpcap importeren van scapy. Dit laadt de file in.
@@ -46,7 +47,7 @@ class Wireshark:
             # Als het bestand niet bestaat ook een foutmelding teruggeven
             except FileNotFoundError:
                 # hier wordt er een foutmelding getoond
-                Sg.Popup("Dit is geen Wireshark bestand.", button_color=('black', 'yellow'))
+                Sg.Popup("Dit bestand bestaat niet.", button_color=('black', 'yellow'))
 
         # Als het niet de extensie .pcap heeft wordt er een melding teruggegeven
         else:
@@ -56,7 +57,7 @@ class Wireshark:
 # main uitvoeren
 if __name__ == '__main__':
     # klasse aanmaken van Wireshark
-    print_wireshark = Wireshark()
+    show_wireshark = Wireshark()
 
     # hier wordt de functie aangeroepen uit de klasse met de constructor
-    print_wireshark.main("bestandspad invoeren")
+    show_wireshark.wireshark("bestandspad invoeren")

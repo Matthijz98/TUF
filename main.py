@@ -16,11 +16,12 @@ from lib import Sqlite
 # Imports the script VirusTotal from the directory 'lib' into the main.py script which enables the use of virustotal
 from lib import VirusTotal
 # Imports the script Wireshark from the directory 'lib' into the main.py script which enables the use of wireshark
-from lib import Wireshark
+from lib.Wireshark import Wireshark
 # Imports the script Treeview from the directory 'lib' into the main.py script which enables the use of the treeview
 from lib import Treeview
 
 from lib import Image
+
 
 virustotal_api = ""
 # make a config object
@@ -39,7 +40,6 @@ db = ''
 loggedin = False
 # the currently open case
 active_case = ''
-
 
 # a method that makes a case
 def makeCase(number, title, note):
@@ -381,13 +381,14 @@ while True:
                                                 Image.main.extract_file(image, filepath_from_filepath_list[0], "raw",
                                                     file_name[0], path, partition_offset_list[0])
 
-                                        vt = VirusTotal.VirusTotal(virustotal_api)
-                                        # the chosen file will get send to virustotal
-                                        #output_filepath = os.path.join(path, file_name[0])
-                                        testfile = os.path.join(path, file_name[0])
-                                        # functie test_file uitvoeren
-                                        # hier wordt de functie aangeroepen uit de klasse met de constructor
-                                        virustotal = vt.test_file(testfile)
+                                            vt = VirusTotal.VirusTotal(virustotal_api)
+
+                                            # bestand selecteren
+                                            testfile = path + "/" + file_name[0]
+
+                                            # functie test_file uitvoeren
+                                            # hier wordt de functie aangeroepen uit de klasse met de constructor
+                                            virustotal = vt.test_file(testfile)
 
                                     if ev7 == "Wireshark":
                                         # get the file_id so the file can be extracted
@@ -408,9 +409,11 @@ while True:
                                                 Image.main.extract_file(image, filepath_from_filepath_list[0], "raw",
                                                                         file_name[0], path, partition_offset_list[0])
 
-                                        wireshark = Wireshark.Wireshark
-                                        filename = os.path.join(path, file_name[0])
-                                        wireshark.main(filename)
+                                            filename = path + "/" + file_name[0]
+                                            # make object of Wireshark()
+                                            show_wireshark = Wireshark()
+                                            # run the function
+                                            show_wireshark.wireshark(filename)
 
                 if ev5 is None:
                     break

@@ -53,12 +53,12 @@ class VirusTotal:
             print("Er gaat iets fout met het lezen van het bestand.")
 
     # Met deze functie wordt de hashwaarde verstuurt naar VirusTotal
-    def send_hash(self, hashing):
+    def send_hash(self, filehash):
         # De PublicApi wordt doorgegeven aan api
         api = PublicApi(self.api)
 
         # response terugvragen van virustotal
-        response = api.get_file_report(hashing)
+        response = api.get_file_report(filehash)
         return response
 
     # hier wordt het rapport opgehaald als er een bestand wordt geüpload
@@ -71,7 +71,6 @@ class VirusTotal:
                                 params=params)
         json_response = response.json()
 
-        print(json_response)
         return json_response
 
     # hier wordt het bestand geupload naar virustotal
@@ -91,16 +90,19 @@ class VirusTotal:
 
     # hier wordt het bestand daadwerkelijk geupload als de hash niet wordt herkend
     def test_file(self, filename):
+        #print(filename)
         # hash toekennen aan filehash
         filehash = self.hash_file(filename)
+        #print(f"filehash {filehash}")
         # verkrijgen van response van de hash upload
         response_hash = self.send_hash(filehash)
+        #print(f"response {response_hash}")
 
         # kijken of de hashwaarde wordt herkend door VirusTotal
         if response_hash['results']['response_code'] == 0:
 
             # als de response code 0 is, dan wordt het hele bestand geupload
-            Sg.Popup(f"{response_hash['results']['verbose_msg']}.\n\nHet bestand wordt nu geüpload.",
+            Sg.Popup(f"{response_hash['results']['verbose_msg']}.\n\nThe file is now being uploaded.",
                      button_color=('black', 'yellow'))
 
             file_upload = self.upload_file(filename)
@@ -110,13 +112,13 @@ class VirusTotal:
         # wordt er een melding teruggegeven dat het bestand in de wachtrij staat
         if response_hash['results']['response_code'] == -2:
 
-            Sg.Popup(f"VirusTotal geeft het volgende terug: {response_hash['results']['verbose_msg']}",
+            Sg.Popup(f"{response_hash['results']['verbose_msg']}.",
                      button_color=('black', 'yellow'))
 
         else:
 
             # als de hash wel werkt of als het bestand succesvol is gescand wordt dit terugegeven
-            Sg.Popup(f"Aantal positives: {response_hash['results']['positives']}", button_color=('black', 'yellow'))
+            Sg.Popup(f"Positives: {response_hash['results']['positives']}", button_color=('black', 'yellow'))
 
             return response_hash
 
@@ -125,8 +127,9 @@ class VirusTotal:
 if __name__ == '__main__':
     # api key meegeven
     # klasse aanmaken van VirusTotal
-    vt = VirusTotal('api_key meegeven')
+    vt = VirusTotal('api key')
 
     # bestand selecteren
-    testfile = "test_bestand invoeren"
+    testfile = "bestandspad"
 
+    vt.test_file(testfile)
