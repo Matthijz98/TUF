@@ -16,11 +16,12 @@ from lib import Sqlite
 # Imports the script VirusTotal from the directory 'lib' into the main.py script which enables the use of virustotal
 from lib import VirusTotal
 # Imports the script Wireshark from the directory 'lib' into the main.py script which enables the use of wireshark
-from lib import Wireshark
+from lib.Wireshark import Wireshark
 # Imports the script Treeview from the directory 'lib' into the main.py script which enables the use of the treeview
 from lib import Treeview
 
 from lib import Image
+
 
 virustotal_api = ""
 # make a config object
@@ -407,8 +408,10 @@ while True:
                                                                         file_name[0], path, partition_offset_list[0])
 
                                             filename = path + "/" + file_name[0]
-
-                                            Wireshark.wireshark(filename)
+                                            # make object of Wireshark()
+                                            show_wireshark = Wireshark()
+                                            # run the function
+                                            show_wireshark.wireshark(filename)
 
                 if ev5 is None:
                     break
