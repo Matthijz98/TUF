@@ -417,7 +417,7 @@ while True:
 
                                             # functie aanroepen
                                             wireshark_data = show_wireshark.packet_to_array(wireshark_export)
-                                            
+
                                             name, ext = os.path.splitext(wireshark_export)
 
                                             if ext == '.pcap':
@@ -428,9 +428,9 @@ while True:
                                                                  )
                                                 # hides the window loginWindow
                                                 # The layout of the window is created with the 'layout' variable
-                                                layout10 = [[Sg.T(' ' * 20), Sg.Text('Welcome to Turtle Forensics!')],
+                                                layout10 = [[Sg.T(''), Sg.Text('Welcome to Turtle Forensics!')],
                                                             [Sg.Text('', key='OUTPUT')],
-                                                            [Sg.Text('This are all the packets in the PCAP file')],
+                                                            [Sg.Text('This are all the packets in the PCAP file:')],
                                                             [table],
                                                             [Sg.Button('Ga terug')]]
                                                 # Giving the window the variable layout
