@@ -1,0 +1,6 @@
+libewf-python
+PySimpleGUI
+pytsk3
+requests
+scapy
+virustotal-api

@@ -31,6 +31,7 @@ class Sqlite:
         self.conn = self.sqlite3.connect(self.path + '/' + self.filename+'.db')
         # make te cursor objects
         self.c = self.conn.cursor()
+        self.setup_database()
 
     ##########################
     # Main database functions
@@ -66,8 +67,8 @@ class Sqlite:
                        'evidence_id integer NULL, '
                        'user_id integer NULL,'
                        'session_id integer NULL, '
-                       'case_id integer NULL, e'
-                       ' text, '
+                       'case_id integer NULL,'
+                       'date_time text,'
                        'title text NULL, '
                        'details text NULL, '
                        'FOREIGN KEY (evidence_id) REFERENCES evidences(evidence_id), '
@@ -115,7 +116,6 @@ class Sqlite:
         # commit all changes to the database
         self.conn.commit()
         # log the creation of the database to the new database
-        self.log_item(title="the database has been created")
 
     #############################
     # all log related functions
