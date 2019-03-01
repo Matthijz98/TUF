@@ -37,7 +37,7 @@ class Wireshark:
 
                 # voor elke packet moeten tekens (unicode) worden vervangen
                 for packet in packets:
-                    replace_unicode = (packet.summary().replace(';', '')#.replace('"', '"').replace('/', '/')
+                    replace_unicode = (packet.summary().replace(';', '')  # .replace('"', '"').replace('/', '/')
                                        .replace('  ', ' '),)
                     # alles weer bij elkaar voegen
                     packets_tuple = packets_tuple + (replace_unicode,)
