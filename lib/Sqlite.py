@@ -287,7 +287,7 @@ class Sqlite:
         # save the changes made
         self.conn.commit()
         # log the creation of the new user
-        self.log_item(title="new user created", details="username:"+username+" password:"+password+"")
+        self.log_item(title="new user created", details="username:"+username+" password:"+hash_password+"")
 
     # check if the user password is correct
     def check_user(self, username, password):

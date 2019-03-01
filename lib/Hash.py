@@ -1,6 +1,6 @@
 """
-Gemaakt door:
-Studentnummer:
+Gemaakt door: Dylan Debipersad
+Studentnummer: S1105887
 """
 
 # Hash library importeren

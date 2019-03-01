@@ -1,6 +1,6 @@
 """
-Gemaakt door:
-Studentnummer: 
+Gemaakt door: Dylan Debipersad
+Studentnummer: S1105887
 """
 
 # De publicApi importeren van virustotal
@@ -100,8 +100,7 @@ class VirusTotal:
         if response_hash['results']['response_code'] == 0:
 
             # als de response code 0 is, dan wordt het hele bestand geupload
-            Sg.Popup(f"{response_hash['results']['verbose_msg']}.\n\nThe file is now being uploaded.",
-                     button_color=('black', 'yellow'))
+            Sg.Popup(f"{response_hash['results']['verbose_msg']}.\n\nThe file is now being uploaded.")
 
             file_upload = self.upload_file(filename)
             return self.get_report(file_upload)
@@ -110,13 +109,12 @@ class VirusTotal:
         # wordt er een melding teruggegeven dat het bestand in de wachtrij staat
         if response_hash['results']['response_code'] == -2:
 
-            Sg.Popup(f"{response_hash['results']['verbose_msg']}.",
-                     button_color=('black', 'yellow'))
+            Sg.Popup(f"{response_hash['results']['verbose_msg']}.")
 
         else:
 
             # als de hash wel werkt of als het bestand succesvol is gescand wordt dit terugegeven
-            Sg.Popup(f"Positives: {response_hash['results']['positives']}", button_color=('black', 'yellow'))
+            Sg.Popup(f"Positives: {response_hash['results']['positives']}")
 
             return response_hash
 

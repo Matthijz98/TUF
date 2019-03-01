@@ -1,8 +1,12 @@
-#######################
-# Main/GUI            #
-# Oskar Brynkus       #
-# s1105798            #
-#######################
+########################################
+# Main/GUI                             #
+# Oskar Brynkus/ Matthijs Zondervan    #
+# s1105798 / S1105633                  #
+# Loggging en config bestand zijn door #
+# Matthijs gemaakt de rest van de gui  #
+# door Oskar                           #
+########################################
+
 ##
 # All the libraries that are being imported.
 # config parser to save settings in a config file
@@ -148,7 +152,7 @@ while True:
                    [Sg.Text('', key='OUTPUT')],
                    [Sg.Text('Would you like to create a new case or open a recent one?')],
                    [table],
-                   [Sg.Button('Open Case'), Sg.Button('Create Case'), Sg.Button('VirusTotal'), Sg.Button('Logging'), Sg.Button('Treeview')]]
+                   [Sg.Button('Open Case'), Sg.Button('Create Case'), Sg.Button('VirusTotal API key'), Sg.Button('Logging'), Sg.Button('Treeview')]]
         # Giving the window the variable layout
         loggedWindow = Sg.Window('TUF - Turtle Forensics', icon='ICON.ico').Layout(layout3)
 
@@ -156,7 +160,7 @@ while True:
             if loggedWindow_active:
                 ev3, vals3 = loggedWindow.Read()
                 # if the user pressed the button virustotal then it will execute the code beneath it
-                if ev3 == 'VirusTotal':
+                if ev3 == 'VirusTotal API key':
                     # check if api key is set
                     if virustotal_api == "":
                         # if not set ask the user
@@ -168,17 +172,14 @@ while True:
                         # write the config file to config.ini
                         with open('config.ini', 'w') as configfile:
                             config.write(configfile)
+                    else:
+                        Sg.Popup("Key has been set already")
                     vt = VirusTotal.VirusTotal(virustotal_api)
-                    # the chosen file will get send to virustotal
-                    #testfile = Sg.PopupGetFile('Which file would you like to check?', 'TUF - VirusTotal')
-                    # functie test_file uitvoeren
-                    # hier wordt de functie aangeroepen uit de klasse met de constructor
-                    #virustotal = vt.test_file(testfile)
-
-
 
                 if ev3 == 'Open Case':
                     active_case = cases[vals3[0][0]][0]
+                    db.log_item(title="Case " + active_case + " has been opened", case_id=active_case,
+                                details="case id: " + active_case)
                     break
 
                 if ev3 == 'Treeview':
@@ -271,6 +272,7 @@ while True:
                     # to open up
                     if ev5 == 'Save':
                         if vals5['E01']:
+                            db.log_item(title="E01 image is being imported")
                             imageformat = "e01"
                             treeviewWindow_active = True
                             createCaseWindow2_active = False
@@ -298,6 +300,7 @@ while True:
 
                         if vals5['RAW']:
                             imageformat = "raw"
+                            db.log_item(title="RAW image is being imported")
                             treeviewWindow_active = True
                             createCaseWindow2_active = False
                             createCaseWindow2.Hide()
@@ -382,13 +385,14 @@ while True:
                                                     file_name[0], path, partition_offset_list[0])
 
                                             vt = VirusTotal.VirusTotal(virustotal_api)
-
                                             # bestand selecteren
                                             testfile = path + "/" + file_name[0]
 
                                             # functie test_file uitvoeren
                                             # hier wordt de functie aangeroepen uit de klasse met de constructor
                                             virustotal = vt.test_file(testfile)
+                                            db.log_item(title="File is been uploaded to Virus total", file_id=file_id,
+                                                        details="file path: " + testfile)
 
                                     if ev7 == "Wireshark":
                                         # get the file_id so the file can be extracted
@@ -431,8 +435,7 @@ while True:
                                                 layout10 = [[Sg.T(''), Sg.Text('Welcome to Turtle Forensics!')],
                                                             [Sg.Text('', key='OUTPUT')],
                                                             [Sg.Text('This are all the packets in the PCAP file:')],
-                                                            [table],
-                                                            [Sg.Button('Ga terug')]]
+                                                            [table]]
                                                 # Giving the window the variable layout
                                                 wireshark_window = Sg.Window('TUF - Turtle Forensics', icon='ICON.ico').Layout(
                                                     layout10)

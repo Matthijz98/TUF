@@ -1,6 +1,6 @@
 """
-Gemaakt door:
-Studentnummer:
+Gemaakt door: Dylan Debipersad
+Studentnummer: S1105887
 """
 
 # Van de library scapy rdpcap en scapy_exception importeren
@@ -30,7 +30,7 @@ class Wireshark:
                 packets = rdpcap(filename)
 
                 # Hier worden het aantal packets getoond
-                Sg.Popup(f"Aantal packets: {len(packets)}", button_color=('black', 'yellow'))
+                Sg.Popup(f"Packets amount: {len(packets)}")
 
                 # tuple aanmaken zodat die gevuld kan worden met packets
                 packets_tuple = ()
@@ -47,16 +47,16 @@ class Wireshark:
             # Dit vangt de error op om vervolgens een melding terug te geven
             except Scapy_Exception:
                 # hier wordt er een foutmelding getoond
-                Sg.Popup("Dit is geen Wireshark bestand.", button_color=('black', 'yellow'))
+                Sg.Popup("Dit is geen Wireshark bestand.")
 
             # Als het bestand niet bestaat ook een foutmelding teruggeven
             except FileNotFoundError:
                 # hier wordt er een foutmelding getoond
-                Sg.Popup("Dit bestand bestaat niet.", button_color=('black', 'yellow'))
+                Sg.Popup("Dit bestand bestaat niet.")
 
         # Als het niet de extensie .pcap heeft wordt er een melding teruggegeven
         else:
-            Sg.Popup("Dit is geen Wireshark bestand.", button_color=('black', 'yellow'))
+            Sg.Popup("Dit is geen Wireshark bestand.")
 
 
 # main uitvoeren
