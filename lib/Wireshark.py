@@ -37,8 +37,7 @@ class Wireshark:
 
                 # voor elke packet moeten tekens (unicode) worden vervangen
                 for packet in packets:
-                    replace_unicode = (packet.summary().replace(';', '')  # .replace('"', '"').replace('/', '/')
-                                       .replace('  ', ' '),)
+                    replace_unicode = (packet.summary().replace(';', '').replace('  ', ' '),)
                     # alles weer bij elkaar voegen
                     packets_tuple = packets_tuple + (replace_unicode,)
                 # tuples returnen
@@ -47,16 +46,16 @@ class Wireshark:
             # Dit vangt de error op om vervolgens een melding terug te geven
             except Scapy_Exception:
                 # hier wordt er een foutmelding getoond
-                Sg.Popup("Dit is geen Wireshark bestand.")
+                Sg.Popup("This is not a valid Wireshark file.")
 
             # Als het bestand niet bestaat ook een foutmelding teruggeven
             except FileNotFoundError:
                 # hier wordt er een foutmelding getoond
-                Sg.Popup("Dit bestand bestaat niet.")
+                Sg.Popup("This file doesn't exist.")
 
         # Als het niet de extensie .pcap heeft wordt er een melding teruggegeven
         else:
-            Sg.Popup("Dit is geen Wireshark bestand.")
+            Sg.Popup("This is not a valid Wireshark file.")
 
 
 # main uitvoeren
