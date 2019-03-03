@@ -1,13 +1,15 @@
 #######################
-#       Made By       #
+#     Gemaakt door    #
 # Gido Scherpenhuizen #
 #      S1108069       #
 #######################
-##
-#MERGED BLYAT
+
+
 # Import libraries used for time conversion and easy path joins
 import datetime
 from os.path import join as pjoin
+
+# Import library for the hashing function
 import hashlib
 import sys
 
@@ -38,9 +40,6 @@ def addtodb(db, partition_id, partition_offset, parent_key,  md5_hash, sha256_ha
     db.set_file(partition_id, partition_offset, parent_key,  md5_hash, sha256_hash, sha1_hash, name, create, modify, filepath, size, extension, f_type)
 
 
-# imagelocation = pjoin("ImageUSBSjors.dd.001")
-
-
 # Function to retreive data from a directory
 def getdirectorydata(db, image, change_dir, parent_key, imagetype):
     for f in main.main(image, imagetype, change_dir):
@@ -59,6 +58,8 @@ def getdirectorydata(db, image, change_dir, parent_key, imagetype):
 def start(db, image, imagetype):
     for f in main.main(image, imagetype):
         if f[10] == "DIR":
+            # Wanneer een directory geen . of .. bevat wordt deze aan de database toegevoegd en geopend om verdere
+            # mappen en bestanden te doorzoeken
             if f[4] != "." and f[4] != "..":
                 addtodb(db, f[0], "", f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10], f[11])
                 change_dir = f[4]
@@ -67,23 +68,23 @@ def start(db, image, imagetype):
         else:
             addtodb(db, f[0], "", f[1], f[2], f[3], f[4], f[5], f[6], f[7], f[8], f[9], f[10], f[11])
 
-
+# Main klasse waarin een image geopend wordt en alle informatie uit de bestanden gelezen wordt
 class main:
     def main(imagefile, imagetype, change_dir=None):
+        # Wanneer de imagefile een E01 image is wordt deze met de pyewf library geopend
         if imagetype == 'e01':
             image = imagefile.rpartition("/")
             filenames = pyewf.glob(image[2])
             print(filenames)
             ewf_handle = pyewf.handle()
             ewf_handle.open(filenames)
-
-            # Open Pytsk3 handle on E01 image
             imagehandle = ewf_Img_Info(ewf_handle)
+        # Wanneer de imagefile een RAW image is wordt deze met de pytsk3 library geopend
         elif imagetype == 'raw':
             imagehandle = pytsk3.Img_Info(imagefile)
         volume = pytsk3.Volume_Info(imagehandle)
 
-        # Check partitions for partition type and open them
+        # Check de partities voor partitie type en open deze
         for partition in volume:
             if partition.len > 2048 and "Unallocated" not in partition.desc.decode('utf-8') and "Extendend" \
                     not in partition.desc.decode('utf-8') and "Primary Table" not in partition.desc.decode('utf-8'):
@@ -93,9 +94,11 @@ class main:
                     _, e, _ = sys.exc_info()
                     print("[-] Unable to open FS:\n {}".format(e))
 
+                # geef een nummer aan de partitie variabele
                 partition_id = partition.addr
+
                 partition_offset = partition.start * 512
-                # Open directory and change directory
+                # Open de directory and verander directory variabele
                 root_dir = ""
                 current_dir = str(change_dir)
                 if change_dir is None:
@@ -103,10 +106,10 @@ class main:
                 else:
                     open_current_dir = filesystemObject.open_dir(path=current_dir)
 
-                # Make a list where all file data will be stored
+                # Maak een lijst waar alle metadata van bestanden opgeslagen wordt
                 filelist = []
 
-                # Open and check every file for data
+                # Open een bestand en lees de metadata eruit
                 for f in open_current_dir:
                     name = f.info.name.name.decode('utf-8')
                     print(name)
@@ -156,6 +159,7 @@ class main:
                 # Return the list of file data
                 return filelist
 
+    # Funtie om een bestand te exporteren
     def extract_file(image, filepath, imagetype, name, savelocation, partition_offset):
         if imagetype == 'e01':
             filenames = pyewf.glob(image)
@@ -172,6 +176,3 @@ class main:
         outfile = open(output_filepath, 'wb')
         filedata = file_object.read_random(0, file_object.info.meta.size)
         outfile.write(filedata)
-
-        def returnpath():
-            return output_filepath
