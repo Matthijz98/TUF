@@ -391,7 +391,7 @@ while True:
                                             # functie test_file uitvoeren
                                             # hier wordt de functie aangeroepen uit de klasse met de constructor
                                             virustotal = vt.test_file(testfile)
-                                            db.log_item(title="File is been uploaded to Virus total", file_id=file_id,
+                                            db.log_item(title="File is been uploaded to Virus total",
                                                         details="file path: " + testfile)
 
                                     if ev7 == "Wireshark":
