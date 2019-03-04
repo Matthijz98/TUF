@@ -248,6 +248,9 @@ class Sqlite:
         # return all the data
         return self.c.fetchall()
 
+    ####
+    # Gemaakt door:
+    # Gido Scherpenhuizen s1108069
     def get_file_name(self, file_id):
         self.c.execute("SELECT title FROM files WHERE files.file_id == '%s'" % file_id)
         return self.c.fetchall()
@@ -271,6 +274,7 @@ class Sqlite:
     def get_parent_key(self, name):
         self.c.execute("SELECT file_id FROM files WHERE files.title == '%s'" % name)
         return self.c.fetchone()
+    ####
 
     ##############################
     # all user related functions
